@@ -13,7 +13,7 @@ export default defineConfig({
   // server: {
   //   hmr: false, // HMR 파일 생성 비활성화
   // },
-  base: '/study_camp_r_client/',
+  base: '/study-camp-client/',
   // define: {
   //   'process.env.PUBLIC_URL': process.env.PUBLIC_URL,
   // },
