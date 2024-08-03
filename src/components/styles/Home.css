@@ -1,0 +1,29 @@
+.home {
+  width: 100%;
+  /* background-color: rgb(151, 33, 33); */
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  padding-top: 100px;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
+
+.homeContainer {
+  gap: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+}
+
+/* 도트의 스타일 변경 */
+/* .slick-dots li button:before {
+} */
+
+/* 활성화된 도트의 스타일 변경 */
+.slick-dots li.slick-active button:before {
+  color: #226699;
+}

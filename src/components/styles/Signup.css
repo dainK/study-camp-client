@@ -1,0 +1,85 @@
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #226699;
+}
+
+.signup-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* background-color: #333; */
+}
+
+.signup-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 460px;
+  /* width: 400px; */
+  text-align: center;
+}
+
+.signup-container h1 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.signup-container .form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.signup-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.signup-container input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.signup-container button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.signup-container .button-box {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.signup-container .signup-button {
+  background-color: #226699;
+  color: white;
+}
+
+.signup-container .google-signup-button {
+  background-color: #db4437;
+  color: white;
+}
+
+.signup-container .kakao-signup-button {
+  background-color: #f1cd00;
+  color: white;
+}
+
+.signup-container button:hover {
+  opacity: 0.9;
+}

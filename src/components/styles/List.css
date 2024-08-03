@@ -1,0 +1,119 @@
+.list {
+  width: 100%;
+  background-color: white;
+  /* position: fixed; */
+  /* top: 0px;
+  bottom: 0px;
+  padding-top: 100px; */
+  display: flex;
+  justify-content: center;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: center; */
+}
+
+/* .list p {
+  color: #226699;
+  font-weight: bold;
+} */
+
+.listContainer {
+  /* gap: 10px; */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.listSliberContainer {
+  padding: 0% 5% 0% 5%;
+  /* background-color: #226699; */
+  width: 100%;
+  /* border-radius: 5px; */
+  /* border: 1px solid #ccc; */
+  margin-bottom: 30px;
+}
+
+/* 화살표 버튼의 스타일 변경 */
+.list .slick-prev:before,
+.list .slick-next:before {
+  color: #226699; /* 화살표 색상 변경 */
+}
+
+.list .uiContainer {
+  /* background-color: rgb(223, 108, 108); */
+  height: 100%;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list .uiLeft {
+  display: flex;
+  align-items: center;
+}
+
+.list .textItem {
+  display: inline-block;
+  white-space: nowrap;
+  cursor: pointer;
+  margin: 10px;
+  color: #226699;
+  font-weight: bold;
+}
+
+.list .uiRight {
+  display: flex;
+  align-items: center;
+  /* background-color: #007bff; */
+}
+
+.list .codeButton {
+  display: inline-block;
+  white-space: nowrap;
+  /* display: none; */
+  border-radius: 5px;
+  background-color: #edfaff;
+  border: 1px solid #226699;
+  color: #226699;
+  /* height: 35px; */
+  font-weight: bold;
+  padding: 4px 6px 4px 6px;
+  margin: 2px;
+
+  text-decoration: none;
+  line-height: inherit;
+}
+
+.list .createButton {
+  /* display: none; */
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 5px;
+  background-color: #297ebd;
+  border: 1px solid #297ebd;
+  color: white;
+  /* height: 35px; */
+  font-weight: bold;
+  padding: 4px 6px 4px 6px;
+  margin: 2px;
+
+  text-decoration: none;
+  line-height: inherit;
+}
+
+.list .searchinput {
+  box-sizing: border-box;
+  /* width: 50%; */
+  padding: 4px 6px 4px 6px;
+  margin: 2px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  /* font-size: 16px; */
+}
+
+.list .searchinput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px #ccc;
+}

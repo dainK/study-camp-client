@@ -1,0 +1,42 @@
+.title {
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+}
+
+.titleContainer {
+  height: 100%;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleLeft {
+  display: flex;
+  align-items: center;
+}
+
+.title img {
+  width: 350;
+  height: 60;
+}
+
+@media (max-width: 800px) {
+  .title img {
+    width: 315px;
+    height: 54px;
+  }
+}
+
+@media (max-width: 600px) {
+  .title img {
+    width: 280px;
+    height: 48px;
+  }
+}
