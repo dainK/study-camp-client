@@ -36,11 +36,11 @@ const ListPublic = () => {
       const width = window.innerWidth;
 
       if (width <= 600) {
-        setItemsPerPage(6); // 600px 이하일 때 3컬럼
+        setItemsPerPage(4); // 600px 이하일 때 3컬럼
       } else if (width <= 800) {
-        setItemsPerPage(8); // 800px 이하일 때 4컬럼
+        setItemsPerPage(6); // 800px 이하일 때 4컬럼
       } else {
-        setItemsPerPage(10); // 800px 초과일 때 6컬럼
+        setItemsPerPage(8); // 800px 초과일 때 6컬럼
       }
     };
 
@@ -116,7 +116,14 @@ const ListPublic = () => {
                     }
                     alt="Card image"
                   />
-                  <Card.ImgOverlay>
+                  <Card.ImgOverlay
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'end',
+                      alignItems: 'end',
+                      // textAlign: 'center',
+                    }}
+                  >
                     <span className="count-text">{space.membersCount}명</span>
                   </Card.ImgOverlay>
                 </Card>

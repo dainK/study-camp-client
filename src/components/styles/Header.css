@@ -1,6 +1,7 @@
 /* Header.css */
 .header {
-  width: calc(100% - 12px);
+  width: 100%;
+  /* width: calc(100% - 12px); */
   background-color: white;
   position: fixed;
   top: 0;

@@ -3,7 +3,6 @@ import React from 'react';
 // import title from './images/title.png';
 import './styles/Header.css';
 import { Link } from 'react-router-dom';
-import { userInfo } from '../util/info';
 import { requestChekLogin, requestLogout } from '../util/request';
 
 class Header extends React.Component {

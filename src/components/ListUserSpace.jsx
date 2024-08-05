@@ -6,6 +6,7 @@ import { requestChekLogin, requestAllSpaceList } from '../util/request';
 import ReactPaginate from 'react-paginate';
 import EnterSpaceModal from './modal/EnterSpaceModal';
 import CreateSpaceModal from './modal/CreateSpaceModal';
+import InviteCodeModal from './modal/InviteCodeModal';
 
 const ListUserSpace = () => {
   const [spaceList, setSpaceList] = useState([]);
@@ -14,8 +15,9 @@ const ListUserSpace = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCodeModal, setShowCodeModal] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false); // 추가: 학습 공간 만들기 모달
   const [pageRangeDisplayed, setPageRangeDisplayed] = useState(10); // 페이지 버튼 수 초기값
 
   useEffect(() => {
@@ -43,14 +45,11 @@ const ListUserSpace = () => {
       const width = window.innerWidth;
 
       if (width <= 600) {
-        setItemsPerPage(6); // 600px 이하일 때 6아이템
-        setPageRangeDisplayed(3); // 페이지 버튼 수를 3으로 조정
+        setItemsPerPage(4); // 600px 이하일 때 3컬럼
       } else if (width <= 800) {
-        setItemsPerPage(8); // 800px 이하일 때 8아이템
-        setPageRangeDisplayed(4); // 페이지 버튼 수를 4로 조정
+        setItemsPerPage(6); // 800px 이하일 때 4컬럼
       } else {
-        setItemsPerPage(10); // 800px 초과일 때 10아이템
-        setPageRangeDisplayed(5); // 페이지 버튼 수를 5로 조정
+        setItemsPerPage(8); // 800px 초과일 때 6컬럼
       }
     };
 
@@ -80,6 +79,14 @@ const ListUserSpace = () => {
 
   const handleCloseCreateModal = () => {
     setShowCreateModal(false);
+  };
+
+  const handleOpenCodeModal = () => {
+    setShowCodeModal(true);
+  };
+
+  const handleCloseCodeModal = () => {
+    setShowCodeModal(false);
   };
 
   const offset = currentPage * itemsPerPage;
@@ -113,7 +120,9 @@ const ListUserSpace = () => {
           </div> */}
         </div>
         <div className="uiRight">
-          <button className="codeButton">코드로 입장</button>
+          <button className="codeButton" onClick={handleOpenCodeModal}>
+            코드로 입장
+          </button>
           <button className="createButton" onClick={handleOpenCreateModal}>
             학습 공간 만들기
           </button>
@@ -194,6 +203,10 @@ const ListUserSpace = () => {
       <CreateSpaceModal
         show={showCreateModal}
         handleClose={handleCloseCreateModal}
+      />
+      <InviteCodeModal
+        show={showCodeModal}
+        handleClose={handleCloseCodeModal}
       />
     </>
   );

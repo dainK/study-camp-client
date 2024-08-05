@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/Modal.css';
 
 const EnterSpaceModal = ({ show, handleClose, space }) => {
   const [password, setPassword] = useState('');
@@ -16,60 +17,31 @@ const EnterSpaceModal = ({ show, handleClose, space }) => {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>학습공간 입장</Modal.Title>
+        <Modal.Title>{space?.name || ''}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          {/* 학습공간 이름 */}
-          <Form.Group controlId="formName">
-            <Form.Label>{space?.name || ''}</Form.Label>
-          </Form.Group>
-
-          <Form.Group controlId="formImage" className="mt-3">
-            {space?.image_url ? (
-              <div className="mt-3">
-                <img
-                  src={space.image_url}
-                  alt="Thumbnail"
-                  style={{ width: '100%', aspectRatio: '2 / 1' }}
-                />
-              </div>
-            ) : (
-              <div className="mt-3">
-                <img
-                  src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png"
-                  alt="Default"
-                  style={{ width: '100%', aspectRatio: '2 / 1' }}
-                />
-              </div>
-            )}
-          </Form.Group>
-
-          <Form.Group controlId="formImage" className="mt-3">
-            <Form.Label>{space?.content || ''}</Form.Label>
-          </Form.Group>
-
-          {/* <Form.Group controlId="formPublic" className="mt-3">
-            <Form.Check
-              type="radio"
-              id="public"
-              label="공개"
-              checked={isPublic}
-              onChange={() => setIsPublic(true)}
+          <div className="mt-3 position-relative">
+            <img
+              src={
+                space?.image_url ||
+                'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png'
+              }
+              alt="Thumbnail"
+              style={{ width: '100%', aspectRatio: '2 / 1', display: 'block' }}
             />
-            <Form.Check
-              type="radio"
-              id="private"
-              label="비공개"
-              checked={!isPublic}
-              onChange={() => setIsPublic(false)}
-            />
-          </Form.Group> */}
+            {/* 텍스트를 이미지 위에 배치 */}
+            <div className="position-absolute top-50 start-50 translate-middle">
+              <span className="text-overlay">{space?.membersCount || 0}명</span>
+            </div>
+          </div>
+
+          <p>{space?.content || ''}</p>
 
           {/* 비공개일 경우 비밀번호 입력 필드 */}
           {!isPublic && (
             <Form.Group controlId="formPassword" className="mt-3">
-              <Form.Label>비밀번호</Form.Label>
+              <Form.Label>비공개 방입니다</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="비밀번호를 입력하세요"
