@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles/Title.css';
+import { Link } from 'react-router-dom';
 
 class Title extends React.Component {
   render() {
@@ -8,9 +9,9 @@ class Title extends React.Component {
         <header className="title">
           <div className="titleContainer">
             <div className="titleLeft">
-              <a href="/">
+              <Link to="/" className="titleButton">
                 <img src={`./title.png`} />
-              </a>
+              </Link>
             </div>
             <div></div>
           </div>

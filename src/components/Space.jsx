@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import Phaser from 'phaser';
-
 import Scene from '../phaser/Scene.js';
+
+// import './styles/Space.css';
+// import Title from './Title';
 
 class Space extends Component {
   componentDidMount() {
@@ -24,7 +26,7 @@ class Space extends Component {
 
   initGame() {
     const config = {
-      type: Phaser.AUTO,
+      type: Phaser.CANVAS,
       width: window.innerWidth,
       height: window.innerHeight,
       backgroundColor: 0xffffff,
@@ -41,7 +43,12 @@ class Space extends Component {
   }
 
   render() {
-    return <div id="phaser-game" />;
+    return (
+      <>
+        {/* <Title /> */}
+        <div className="phaser-game" />
+      </>
+    );
   }
 }
 

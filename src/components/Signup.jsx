@@ -1,54 +1,97 @@
 import React from 'react';
 import './styles/Signup.css';
 import Title from './Title';
+import { Card, Modal, Button, Form } from 'react-bootstrap';
+import { requestSignup } from '../util/request';
 
-function Signup() {
-  return (
-    <>
-      <Title />
-      <div className="signup-container">
-        <div className="signup-box">
-          <div className="signup-card">
-            <h1>Sign up</h1>
-            <form>
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input type="email" id="email" name="email" required />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input type="password" id="password" name="password" required />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">Password confirm</label>
-                <input
-                  type="password"
-                  id="passwordConfirm"
-                  name="passwordConfirm"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">Nick name</label>
-                <input type="text" id="nick_name" name="nick_name" required />
-              </div>
-              <button type="submit" className="signup-button">
-                Sign up
-              </button>
-              <div className="button-box">
-                <button type="button" className="google-signup-button">
-                  Sign up with Google
-                </button>
-                <button type="button" className="kakao-signup-button">
-                  Sign up with Kakao
-                </button>
-              </div>
-            </form>
+class Signup extends React.Component {
+  handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const passwordConfirm = formData.get('passwordConfirm');
+    const nick_name = formData.get('nick_name');
+
+    const res = await requestSignup({
+      email,
+      password,
+      passwordConfirm,
+      nick_name,
+    });
+
+    if (!!res && !!res.data) {
+      console.log(res.data);
+      alert('회원가입 성공');
+      window.location.href = '/';
+    } else {
+      alert('회원가입 실패');
+    }
+  };
+  render() {
+    return (
+      <>
+        <Title />
+        <div className="signup-container">
+          <div className="signup-box">
+            <div className="signup-card">
+              <h1>Sign up</h1>
+              <Form onSubmit={this.handleSubmit}>
+                <Form.Group controlId="signup" className="form-group">
+                  <Form.Control
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                  />
+                  <br></br>
+                  <Form.Control
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                  />
+                  <br></br>
+                  <Form.Control
+                    type="password"
+                    id="passwordConfirm"
+                    name="passwordConfirm"
+                    placeholder="Password confirm"
+                    required
+                  />
+                  <br></br>
+                  <Form.Control
+                    type="text"
+                    id="nick_name"
+                    name="nick_name"
+                    placeholder="Nick name"
+                    required
+                  />
+                </Form.Group>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="signup-button"
+                >
+                  Sign up
+                </Button>
+                <div className="button-box">
+                  <button type="button" className="google-signup-button">
+                    Sign up with Google
+                  </button>
+                  <button type="button" className="kakao-signup-button">
+                    Sign up with Kakao
+                  </button>
+                </div>
+              </Form>
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 export default Signup;

@@ -40,3 +40,23 @@
     height: 48px;
   }
 }
+
+.titleButton {
+  display: inline-block;
+  white-space: nowrap;
+  /* display: none; */
+  /* border-radius: 5px; */
+  /* background-color: #edfaff; */
+  /* border: 1px solid #226699; */
+  /* color: #226699; */
+  font-weight: bold;
+  padding: 4px;
+  margin: 2px;
+  color: #ccc;
+
+  text-decoration: none;
+  line-height: inherit;
+}
+.titleButton:hover {
+  color: #226699;
+}

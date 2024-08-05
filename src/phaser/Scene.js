@@ -46,62 +46,6 @@ export default class Scene extends Phaser.Scene {
     this.load.image('tiles', tiles);
     this.load.image('table', table);
 
-    // // Player Skin
-    // let skinIndex = 0;
-    // for (const path in skinFiles) {
-    //   skinFiles[path]().then((module) => {
-    //     skinIndex++;
-    //     // const fileName = module.default.split('/').pop();
-    //     // const name = fileName.split('.')[0];
-    //       this.load.spritesheet('skin-' + skinIndex, module.default, {
-    //         frameWidth: 48,
-    //         frameHeight: 64,
-    //       });
-    //   });
-    // }
-
-    // // Player Hair
-    // let hairIndex = 0;
-    // for (const path in hairFiles) {
-    //   hairFiles[path]().then((module) => {
-    //     hairIndex++
-    //     // const fileName = module.default.split('/').pop();
-    //     // const name = fileName.split('.')[0];
-    //       this.load.spritesheet('hair-' + hairIndex, module.default, {
-    //         frameWidth: 48,
-    //         frameHeight: 64,
-    //       });
-    //   });
-    // }
-
-    // // Player Clothes
-    // let clothesIndex = 0;
-    // for (const path in clothesFiles) {
-    //   clothesFiles[path]().then((module) => {
-    //     clothesIndex++;
-    //     // const fileName = module.default.split('/').pop();
-    //     // const name = fileName.split('.')[0];
-    //       this.load.spritesheet('clothes-' + clothesIndex, module.default, {
-    //         frameWidth: 48,
-    //         frameHeight: 64,
-    //       });
-    //   });
-    // }
-
-    // // Player Face
-    // let faceIndex = 0;
-    // for (const path in faceFiles) {
-    //   faceFiles[path]().then((module) => {
-    //     faceIndex++;
-    //     // const fileName = module.default.split('/').pop();
-    //     // const name = fileName.split('.')[0];
-    //       this.load.spritesheet('face-' + faceIndex, module.default, {
-    //         frameWidth: 48,
-    //         frameHeight: 64,
-    //       });
-    //   });
-    // }
-
     const scene = this;
     // 프로미스를 사용하여 각 파일 세트를 처리하는 함수
     async function loadSpritesheet(fileSet, prefix) {

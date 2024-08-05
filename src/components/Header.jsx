@@ -3,26 +3,38 @@ import React from 'react';
 // import title from './images/title.png';
 import './styles/Header.css';
 import { Link } from 'react-router-dom';
+import { userInfo } from '../util/info';
+import { requestChekLogin, requestLogout } from '../util/request';
 
 class Header extends React.Component {
-  onClickLoginButton = () => {
-    // /login로 이동
+  state = {
+    isUser: false,
   };
-  onClickSignupButton = () => {
-    // /signup 이동
+
+  async componentDidMount() {
+    try {
+      const check = await requestChekLogin();
+      this.setState({ isUser: check });
+    } catch (error) {
+      this.setState({ isUser: false });
+    }
+  }
+
+  logout = async () => {
+    const res = await requestLogout();
+    // console.log(res);
+    this.setState({ isUser: false });
   };
 
   render() {
+    const { isUser } = this.state;
     return (
       <header className="header">
         <div className="headContainer">
           <div className="headLeft">
-            <a href="/">
-              <img
-                src={`./title.png`}
-                // style={{ width: '350px', height: '60px' }}
-              />
-            </a>
+            <Link to="/" className="headButton">
+              <img src={`./title.png`} />
+            </Link>
             <div
               className="menuItem"
               onClick={() => console.log('소개 클릭됨')}
@@ -37,20 +49,24 @@ class Header extends React.Component {
             </div>
           </div>
           <div className="headRight">
-            {/* <button className="headButton" onClick={this.onClickLoginButton}>로그인</button> */}
-            {/* <button className="headButton" onClick={this.onClickSignupButton}>회원가입</button> */}
-            <Link to="/login" className="headButton">
-              로그인
-            </Link>
-            <Link to="/signup" className="headButton">
-              회원가입
-            </Link>
-            {/* <a href="/login" className="headButton">
-            로그인
-    </a>
-            <a href="/signup" className="headButton">
-            회원가입
-    </a> */}
+            {!isUser && (
+              <>
+                <Link to="/login" className="headButton">
+                  로그인
+                </Link>
+                <Link to="/signup" className="headButton">
+                  회원가입
+                </Link>
+              </>
+            )}
+
+            {isUser && (
+              <>
+                <button className="logoutButton" onClick={this.logout}>
+                  로그아웃
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>

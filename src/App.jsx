@@ -14,8 +14,8 @@ import {
 function App() {
   return (
     // <HashRouter basename={process.env.PUBLIC_URL}>
-    <HashRouter>
-      {/* <BrowserRouter> */}
+    // <HashRouter>
+    <BrowserRouter>
       {/* <div> */}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -24,7 +24,7 @@ function App() {
         <Route path="/space" element={<Space />} />
       </Routes>
       {/* </div> */}
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 export default App;

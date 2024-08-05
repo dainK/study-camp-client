@@ -11,14 +11,6 @@ import ListUserSpace from './ListUserSpace';
 
 class List extends React.Component {
   render() {
-    const settings = {
-      dots: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 3,
-      slidesToScroll: 3,
-    };
-
     return (
       <div className="list">
         <div className="listContainer">

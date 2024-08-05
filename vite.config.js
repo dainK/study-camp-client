@@ -13,8 +13,11 @@ export default defineConfig({
   // server: {
   //   hmr: false, // HMR 파일 생성 비활성화
   // },
-  base: '/study-camp-client/',
+  // base: '/study-camp-client/',
   // define: {
   //   'process.env.PUBLIC_URL': process.env.PUBLIC_URL,
   // },
+  server: {
+    port: parseInt(process.env.VITE_PORT, 10) || 8000,
+  },
 });

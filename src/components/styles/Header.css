@@ -1,15 +1,17 @@
 /* Header.css */
 .header {
-  width: 100%;
+  width: calc(100% - 12px);
   background-color: white;
   position: fixed;
   top: 0;
+  left: 0;
   /* left: 50%; */
   /* transform: translate(-50%, 0%); */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 400;
+  /* overflow: auto; */
 }
 
 .headContainer {
@@ -76,4 +78,22 @@
 
 .headButton:hover {
   color: #226699;
+}
+
+.logoutButton {
+  display: inline-block;
+  white-space: nowrap;
+  /* display: none; */
+  border-radius: 5px;
+  /* background-color: #edfaff; */
+  background-color: white;
+  border: 1px solid #226699;
+  color: #226699;
+  /* height: 35px; */
+  font-weight: bold;
+  padding: 4px 6px 4px 6px;
+  margin: 2px;
+
+  text-decoration: none;
+  line-height: inherit;
 }
