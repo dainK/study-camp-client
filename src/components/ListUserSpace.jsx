@@ -73,8 +73,13 @@ const ListUserSpace = () => {
     setSelectedSpace(null);
   };
 
-  const handleOpenCreateModal = () => {
-    setShowCreateModal(true);
+  const handleOpenCreateModal = async () => {
+    const check = await requestChekLogin();
+    if (check) {
+      setShowCreateModal(true);
+    } else {
+      alert('로그인이 필요합니다.');
+    }
   };
 
   const handleCloseCreateModal = () => {

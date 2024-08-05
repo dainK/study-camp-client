@@ -88,7 +88,7 @@ export default class Scene extends Phaser.Scene {
     this.player = new Player(this, { ...PlayerData, x: 1, y: 1 });
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
     this.cameras.main.setBounds(0, 0, bgWidth, bgHeight);
-    // this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
+    this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
     // 플레이어에 물리 엔진 활성화
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
   }

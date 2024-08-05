@@ -254,9 +254,9 @@ export default class Player {
     if (this.isMove) return;
     if (
       this.tilePos.x + deltaX < 0 ||
-      this.tilePos.x + deltaX >= this.scene.tileMapWitdh ||
+      this.tilePos.x + deltaX >= MapData.column ||
       this.tilePos.y + deltaY < 0 ||
-      this.tilePos.y + deltaY >= this.scene.tileMapHeight
+      this.tilePos.y + deltaY >= MapData.row
     )
       return;
 

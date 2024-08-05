@@ -1,30 +1,39 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Phaser from 'phaser';
 import Scene from '../phaser/Scene.js';
+import SpaceSidebar from './SpaceSidebar.jsx';
 
-// import './styles/Space.css';
-// import Title from './Title';
+const Space = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-class Space extends Component {
-  componentDidMount() {
-    window.addEventListener('resize', this.handleWindowResize);
-    this.initGame();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleWindowResize);
-    if (this.game) {
-      this.game.destroy(true);
+  useEffect(() => {
+    if (!id) {
+      console.log('ID가 유효하지 않음:', id);
+      navigate('/');
+    } else {
+      console.log('유효한 ID:', id);
+      window.addEventListener('resize', handleWindowResize);
+      initGame();
     }
-  }
 
-  handleWindowResize = () => {
-    if (this.game) {
-      this.game.scale.resize(window.innerWidth, window.innerHeight);
+    return () => {
+      console.log('클린업');
+      window.removeEventListener('resize', handleWindowResize);
+      if (window.game) {
+        window.game.destroy(true);
+      }
+    };
+  }, [id, navigate]);
+
+  const handleWindowResize = () => {
+    if (window.game) {
+      window.game.scale.resize(window.innerWidth, window.innerHeight);
     }
   };
 
-  initGame() {
+  const initGame = () => {
     const config = {
       type: Phaser.CANVAS,
       width: window.innerWidth,
@@ -38,18 +47,17 @@ class Space extends Component {
         default: 'arcade',
       },
     };
-    this.game = new Phaser.Game(config);
-    document.body.style.overflow = 'hidden'; // 스크롤을 없애기 위한 스타일 추가
-  }
+    window.game = new Phaser.Game(config);
+    document.body.style.overflow = 'hidden'; // 스크롤 숨기기
+  };
 
-  render() {
-    return (
-      <>
-        {/* <Title /> */}
-        <div className="phaser-game" />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      {/* <Title /> */}
+      <div className="phaser-game" />
+      <SpaceSidebar />
+    </>
+  );
+};
 
 export default Space;
