@@ -1,6 +1,6 @@
 # STUDY CAMP Front-end
 
-[url](https://web-study-camp-client-dc9c2nlt9lu15r.sel5.cloudtype.app/)
+[Visit Website](https://web-study-camp-client-dc9c2nlt9lu15r.sel5.cloudtype.app/)
 
 ## Development environment
 
