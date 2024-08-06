@@ -15,7 +15,7 @@ export const requestLogin = async (data) => {
   // data = { email, password };
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/auth/login`,
+      `${process.env.VITE_SERVER_URL}/auth/login`,
       data,
     );
     console.log('로그인 성공:', response.data);
@@ -33,7 +33,7 @@ export const requestLogout = async () => {
   const accessToken = localStorage.getItem('access_token');
   try {
     const response = await axios.get(
-      `${import.meta.env.SERVER_URL}/auth/logout`,
+      `${process.env.VITE_SERVER_URL}/auth/logout`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
@@ -49,7 +49,7 @@ export const requestSignup = async (data) => {
   // data = { email, password, passwordConfirm, nick_name };
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/user`,
+      `${process.env.VITE_SERVER_URL}/user`,
       data,
     );
     console.log('회원가입 성공:', response.data);
@@ -63,7 +63,7 @@ export const requestUserProfile = async () => {
   const accessToken = localStorage.getItem('access_token');
   try {
     const response = await axios.get(
-      `${import.meta.env.VITE_SERVER_URL}/user/profile`,
+      `${process.env.VITE_SERVER_URL}/user/profile`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
@@ -76,11 +76,7 @@ export const requestUserProfile = async () => {
 
 export const requestAllSpaceList = async () => {
   try {
-    // const accessToken = localStorage.getItem('access_token');
-    // console.log(import.meta.env.VITE_SERVER_URL);
-    const response = await axios.get(
-      `${import.meta.env.VITE_SERVER_URL}/space`,
-    );
+    const response = await axios.get(`${process.env.VITE_SERVER_URL}/space`);
     // console.log('학습공간 목록 전체 조회 성공', response.data);
     return response.data; // 응답 데이터만 반환
   } catch (error) {
