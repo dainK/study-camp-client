@@ -9,6 +9,9 @@ import Map from './Map.js';
 import MapData from './defines/MapData.js';
 import PlayerData from './defines/PlayerData.js';
 import Player from './Player.js';
+import OtherPlayer from './OtherPlayer.js';
+
+import SocketManager from '../util/SocketManager.js';
 
 const skinFiles = import.meta.glob('./assets/sprites/skin/*.png', {
   eager: false,
@@ -78,12 +81,34 @@ export default class Scene extends Phaser.Scene {
   }
 
   create() {
+    SocketManager.getInstance().subscribe(this.eventscallback.bind(this));
+    SocketManager.getInstance().joinSpace();
+
+    this.otherPlayers = {};
+
     // Create game objects
     this.map = new Map(this);
     this.map.creatTileMap();
 
     const bgWidth = MapData.tileSize * MapData.column;
     const bgHeight = MapData.tileSize * MapData.row;
+
+    // 마우스 휠 이벤트 감지
+    let zoomSpeed = 0.03;
+    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+      // const newZoom = this.cameras.main.zoom + deltaY * zoomSpeed;
+      const standardDeltaY = 100; // 마우스 휠 한 칸당 표준 deltaY 값
+      const zoomChange = (deltaY / standardDeltaY) * zoomSpeed; // 정규화된 deltaY 값을 사용한 줌 변화량 계산
+      const newZoom = this.cameras.main.zoom + zoomChange;
+
+      // 배경의 크기에 따라 줌 제한 설정
+      const maxZoom = Math.max(
+        (window.innerWidth - 20) / bgWidth,
+        (window.innerHeight - 20) / bgHeight,
+      );
+      // 줌 값 범위 설정
+      this.cameras.main.zoom = Phaser.Math.Clamp(newZoom, maxZoom, 2);
+    });
 
     this.player = new Player(this, { ...PlayerData, x: 1, y: 1 });
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
@@ -95,5 +120,45 @@ export default class Scene extends Phaser.Scene {
 
   update() {
     // Update game state
+  }
+
+  eventscallback(namespace, data) {
+    console.log('eventscallback' + '_' + namespace);
+    switch (namespace) {
+      case 'joinSpace':
+        {
+          // console.log(SocketManager.getInstance().getID());
+          data.forEach((playerdata) => {
+            if (playerdata.id !== SocketManager.getInstance().getID()) {
+              // console.log(playerdata.id);
+              if (!this.otherPlayers[playerdata.id]) {
+                this.otherPlayers[playerdata.id] = new OtherPlayer(
+                  this,
+                  playerdata,
+                );
+              }
+            }
+          });
+        }
+        break;
+
+      case 'leaveSpace':
+        if (this.otherPlayers[data.id]) {
+          const leavePlayer = this.otherPlayers[data.id];
+          // leavePlayer.remove();
+          leavePlayer.destroy();
+          this.otherPlayers[data.id] = null;
+        }
+        break;
+
+      case 'movePlayer':
+        if (this.otherPlayers[data.id]) {
+          // console.log(data.x, data.y);
+          const leavePlayer = this.otherPlayers[data.id];
+          leavePlayer.moveOtherPlayer(data.x, data.y);
+          // this.otherPlayers[data.id] = null;
+        }
+        break;
+    }
   }
 }

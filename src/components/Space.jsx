@@ -3,20 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Phaser from 'phaser';
 import Scene from '../phaser/Scene.js';
 import SpaceSidebar from './SpaceSidebar.jsx';
+import SocketManager from '../util/SocketManager.js';
 
 const Space = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!id) {
-      console.log('ID가 유효하지 않음:', id);
-      navigate('/');
-    } else {
-      console.log('유효한 ID:', id);
-      window.addEventListener('resize', handleWindowResize);
-      initGame();
-    }
+    const setupGame = async () => {
+      if (!id) {
+        console.log('ID가 유효하지 않음:', id);
+        navigate('/');
+      } else {
+        console.log('유효한 ID:', id);
+        window.addEventListener('resize', handleWindowResize);
+        initGame();
+        await SocketManager.getInstance().connect();
+      }
+    };
+
+    setupGame();
 
     return () => {
       console.log('클린업');
@@ -24,6 +30,7 @@ const Space = () => {
       if (window.game) {
         window.game.destroy(true);
       }
+      SocketManager.getInstance().disconnect();
     };
   }, [id, navigate]);
 

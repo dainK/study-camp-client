@@ -19,5 +19,12 @@ export default defineConfig({
   // },
   server: {
     port: parseInt(process.env.VITE_PORT, 10) || 8000,
+    proxy: {
+      '/socket.io': {
+        target: process.env.VITE_SERVER_URL || 'http://localhost:4000', // Socket.io 서버 주소
+        ws: true,
+        changeOrigin: true,
+      },
+    },
   },
 });

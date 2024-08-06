@@ -1,25 +1,13 @@
 // import SocketManager from '../managers/socket';
 import MapData from './defines/MapData';
-import SocketManager from '../util/SocketManager';
 
-export default class Player {
+export default class OtherPlayer {
   constructor(scene, data) {
     this.scene = scene;
     this.data = data;
-    this.userId = data.userId;
     this.nickName = data.nickName;
-    // this.memberId = data.memberId;
-
-    this.m_cursorKeys = this.scene.input.keyboard.createCursorKeys();
-    this.wKey = this.scene.input.keyboard.addKey('W');
-    this.sKey = this.scene.input.keyboard.addKey('S');
-    this.aKey = this.scene.input.keyboard.addKey('A');
-    this.dKey = this.scene.input.keyboard.addKey('D');
-
-    const self = this;
-    this.scene.input.keyboard.on('keydown', function (event) {
-      self.handleKeyPress(event);
-    });
+    // this.x = data.x;
+    // this.y = data.y;
 
     this.tilePos = { x: data.x, y: data.y };
     this.isMove = false;
@@ -46,12 +34,6 @@ export default class Player {
     this.hairSprite = this.scene.physics.add.sprite(0, 0, hair);
     this.hairSprite.setOrigin(0, 0.5);
 
-    // console.log(
-    //   this.skinSprite,
-    //   this.faceSprite,
-    //   this.clothesSprite,
-    //   this.hairSprite,
-    // );
     this.nicknameText = this.scene.add.text(0, 0, 'text' /*this.nickName*/, {
       fontSize: '16px',
       fill: '#ffffff',
@@ -65,8 +47,8 @@ export default class Player {
 
     // 컨테이너 생성
     this.player = this.scene.add.container(
-      this.data.x * MapData.tileSize,
-      this.data.y * MapData.tileSize,
+      this.tilePos.x * MapData.tileSize,
+      this.tilePos.y * MapData.tileSize,
       [
         this.skinSprite,
         this.faceSprite,
@@ -96,76 +78,12 @@ export default class Player {
     this.player.destroy();
   }
 
-  handleKeyPress(event) {
-    var deltaX = 0;
-    var deltaY = 0;
-
-    switch (event.code) {
-      case 'ArrowLeft':
-      case 'KeyA':
-        deltaX = -1;
-        break;
-      case 'ArrowRight':
-      case 'KeyD':
-        deltaX = 1;
-        break;
-      case 'ArrowUp':
-      case 'KeyW':
-        deltaY = -1;
-        break;
-      case 'ArrowDown':
-      case 'KeyS':
-        deltaY = 1;
-        break;
-      case 'KeyX':
-        this.sitAnimation();
-        break;
-    }
-
-    // 플레이어 이동
-    if (deltaX || deltaY) this.movePlayer(deltaX, deltaY);
-  }
-
   getSprite() {
     return this.player;
   }
 
   getPos() {
     return this.tilePos;
-  }
-
-  checkKeyPress() {
-    let vector = [0, 0];
-
-    let isUp = this.m_cursorKeys.up.isDown || this.wKey.isDown;
-    let isDwon = this.m_cursorKeys.down.isDown || this.sKey.isDown;
-    let isLeft = this.m_cursorKeys.left.isDown || this.aKey.isDown;
-    let isRight = this.m_cursorKeys.right.isDown || this.dKey.isDown;
-
-    if (isUp || isDwon) {
-      if (isUp && isDwon) {
-      } else if (isUp) {
-        vector[1] = -1;
-      } else {
-        vector[1] = 1;
-      }
-    }
-    if (isLeft || isRight) {
-      if (isLeft && isRight) {
-      } else if (isLeft) {
-        vector[0] = -1;
-      } else {
-        vector[0] = 1;
-      }
-    }
-    if (vector[0] || vector[1]) {
-      this.isMove = false;
-      this.movePlayer(vector[0], vector[1]);
-    } else {
-      this.isAniMove = false;
-      this.isMove = false;
-      this.moveAnimation(vector[0], vector[1]);
-    }
   }
 
   moveAnimation(deltaX, deltaY) {
@@ -251,74 +169,78 @@ export default class Player {
     this.playAnimation('player_dance');
   }
 
-  movePlayer(deltaX, deltaY) {
-    if (this.isMove) return;
-    if (
-      this.tilePos.x + deltaX < 0 ||
-      this.tilePos.x + deltaX >= MapData.column ||
-      this.tilePos.y + deltaY < 0 ||
-      this.tilePos.y + deltaY >= MapData.row
-    )
-      return;
-
-    this.isMove = true;
-    this.tilePos = { x: this.tilePos.x + deltaX, y: this.tilePos.y + deltaY };
+  moveOtherPlayer(tilePosX, tilePosY) {
+    let deltaX =
+      this.tilePos.x === tilePosX ? 0 : this.tilePos.x > tilePosX ? -1 : 1;
+    let deltaY =
+      this.tilePos.y === tilePosY ? 0 : this.tilePos.y > tilePosY ? -1 : 1;
+    this.tilePos = { x: tilePosX, y: tilePosY };
 
     this.moveAnimation(deltaX, deltaY);
-    SocketManager.getInstance().movePlayer(this.tilePos.x, this.tilePos.y);
+
+    if (this.otherTween) {
+      this.otherTween.stop();
+      this.otherTween = null;
+    }
 
     const self = this;
-    this.tween = this.scene.tweens.add({
+    this.otherTween = this.scene.tweens.add({
       targets: [this.player],
       x: this.tilePos.x * MapData.tileSize + 1,
       y: this.tilePos.y * MapData.tileSize + 1,
       duration: 300,
       ease: 'Linear',
       onComplete: function () {
-        // console.log(self.x, self.y);
-        // self.scene.innerLayer();
-        self.checkKeyPress();
+        self.isAniMove = false;
+        self.moveAnimation(0, 0);
       },
     });
   }
 
-  // moveOtherPlayer(tilePosX, tilePosY) {
-  //   let deltaX =
-  //     this.tilePos.x === tilePosX ? 0 : this.tilePos.x > tilePosX ? -1 : 1;
-  //   let deltaY =
-  //     this.tilePos.y === tilePosY ? 0 : this.tilePos.y > tilePosY ? -1 : 1;
-  //   this.tilePos = { x: tilePosX, y: tilePosY };
-
-  //   this.moveAnimation(deltaX, deltaY);
-
-  //   if (this.otherTween) {
-  //     this.otherTween.stop();
-  //     this.otherTween = null;
-  //   }
-
-  //   const self = this;
-  //   this.otherTween = this.scene.tweens.add({
-  //     targets: [this.player],
-  //     x: this.tilePos.x * MapData.tileSize + 1,
-  //     y: this.tilePos.y * MapData.tileSize + 1,
-  //     duration: 300,
-  //     ease: 'Linear',
-  //     onComplete: function () {
-  //       self.isAniMove = false;
-  //       self.moveAnimation(0, 0);
-  //     },
-  //   });
-  // }
-
-  movePosition(x, y) {
-    let vector = [0, 0];
-    if (Math.floor(this.x) !== Math.floor(x)) {
-      vector[0] = this.x > x ? -1 : 1;
+  moveAnimation(deltaX, deltaY) {
+    let vector = [deltaX, deltaY];
+    if (vector[1] === -1 && (this.dir[1] !== vector[1] || !this.isAniMove)) {
+      this.playAnimation('player_walk_up');
     }
-    if (Math.floor(this.y) !== Math.floor(y)) {
-      vector[1] = this.y > y ? -1 : 1;
+
+    if (vector[1] === 1 && (this.dir[1] !== vector[1] || !this.isAniMove)) {
+      this.playAnimation('player_walk_down');
+    }
+
+    if (vector[0] === -1 && (this.dir[0] !== vector[0] || !this.isAniMove)) {
+      this.playAnimation('player_walk_left');
+    }
+
+    if (vector[0] === 1 && (this.dir[0] !== vector[0] || !this.isAniMove)) {
+      this.playAnimation('player_walk_right');
+    }
+
+    if (vector[0] === 0 && vector[1] === 0) {
+      this.isMove = false;
+      if (this.dir[1] === -1) {
+        this.playAnimation('player_idle_up');
+      } else if (this.dir[1] === 1) {
+        this.playAnimation('player_idle_down');
+      } else if (this.dir[0] === -1) {
+        this.playAnimation('player_idle_left');
+      } else if (this.dir[0] === 1) {
+        this.playAnimation('player_idle_right');
+      }
+    } else {
+      this.isAniMove = true;
+      this.dir = vector;
     }
   }
+
+  // movePosition(x, y) {
+  //   let vector = [0, 0];
+  //   if (Math.floor(this.x) !== Math.floor(x)) {
+  //     vector[0] = this.x > x ? -1 : 1;
+  //   }
+  //   if (Math.floor(this.y) !== Math.floor(y)) {
+  //     vector[1] = this.y > y ? -1 : 1;
+  //   }
+  // }
 
   updateSkin(data) {
     this.data.skin = data.skin;
