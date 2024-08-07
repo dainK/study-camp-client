@@ -62,6 +62,15 @@ export default class UserDataManager {
     return this.userData;
   }
 
+  setPosition(x, y) {
+    this.userData.x = x;
+    this.userData.y = y;
+  }
+
+  setLayer(layer) {
+    this.userData.layer = layer;
+  }
+
   resetUserData() {
     this.userData = {
       id: '',
@@ -79,6 +88,10 @@ export default class UserDataManager {
     };
   }
 
+  setSocketId(id) {
+    this.userData.id = id;
+  }
+
   setUserData(data) {
     this.userData.id = data.id;
     this.userData.nickName = data.nickName;
@@ -90,7 +103,9 @@ export default class UserDataManager {
     this.userData.clothes_color = data.clothes_color;
   }
 
-  enterSpace(spaceId) {
+  enterSpace(socketId, spaceId) {
+    console.log('enterSpace', socketId, spaceId);
+    this.userData.id = socketId;
     this.userData.spaceId = spaceId;
     this.userData.x = 1;
     this.userData.y = 1;

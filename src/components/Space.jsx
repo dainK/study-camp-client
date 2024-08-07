@@ -16,13 +16,13 @@ const Space = () => {
         console.log('ID가 유효하지 않음:', id);
         navigate('/');
       } else {
-        const check = await requestCheckSpace(id);
-        console.log(check);
-        if (check) {
+        const spaceId = await requestCheckSpace(id);
+        // console.log(check);
+        if (!!spaceId) {
           console.log('유효한 ID:', id);
           window.addEventListener('resize', handleWindowResize);
           initGame();
-          await SocketManager.getInstance().connect();
+          await SocketManager.getInstance().connect(spaceId);
         } else {
           console.log('ID가 유효하지 않음:', id);
           navigate('/');

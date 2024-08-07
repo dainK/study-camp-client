@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import UserDataManager from './UserDataManager';
 
 export default class SocketManager {
   constructor() {
@@ -10,20 +11,7 @@ export default class SocketManager {
 
     this.callbacks = [];
     // this.connect();
-    this.userData = {
-      id: '',
-      spaceId: 0,
-      nickName: '닉네임',
-      x: 1,
-      y: 1,
-      skin: 0,
-      face: 0,
-      hair: 0,
-      hair_color: 0,
-      clothes: 0,
-      clothes_color: 0,
-      layer: 0,
-    };
+    // this.userData = UserDataManager.getInstance().getUserData();
   }
 
   static getInstance() {
@@ -48,13 +36,13 @@ export default class SocketManager {
     this.callbacks.forEach((callback) => callback(namespace, data));
   }
 
-  async connect() {
+  async connect(spaceId) {
     this.socket = await io(process.env.VITE_SERVER_URL, {
       withCredentials: true,
     });
 
     this.socket.on('connect', async (socket) => {
-      this.userData.id = this.socket.id;
+      UserDataManager.getInstance().enterSpace(this.socket.id, spaceId);
       console.log('connect');
     });
 
@@ -107,37 +95,44 @@ export default class SocketManager {
 
   joinSpace() {
     if (this.socket) {
-      this.socket.emit('joinSpace', this.userData, (response) => {
-        if (response.status === 'success') {
-          console.log(response.message);
-        } else {
-          console.error(response.message);
-        }
-      });
+      this.socket.emit(
+        'joinSpace',
+        UserDataManager.getInstance().getUserData(),
+        (response) => {
+          if (response.status === 'success') {
+            console.log(response.message);
+          } else {
+            console.error(response.message);
+          }
+        },
+      );
     }
   }
 
   movePlayer(x, y) {
-    this.userData.x = x;
-    this.userData.y = y;
+    UserDataManager.getInstance().setPosition(x, y);
     if (this.socket) {
-      this.socket.emit('movePlayer', this.userData, (response) => {
-        if (response.status === 'success') {
-          console.log(response.message);
-        } else {
-          console.error(response.message);
-        }
-      });
+      this.socket.emit(
+        'movePlayer',
+        UserDataManager.getInstance().getUserData(),
+        (response) => {
+          if (response.status === 'success') {
+            console.log(response.message);
+          } else {
+            console.error(response.message);
+          }
+        },
+      );
     }
   }
 
   leaveSpace() {
-    this.socket.emit('leaveSpace', this.userData);
+    this.socket.emit('leaveSpace', UserDataManager.getInstance().getUserData());
   }
 
   joinLayer(layer) {
-    this.userData.layer = layer;
-    this.socket.emit('joinLayer', this.userData);
+    UserDataManager.getInstance().setLayer(layer);
+    this.socket.emit('joinLayer', UserDataManager.getInstance().getUserData());
   }
 
   // leaveLayer(layer) {
