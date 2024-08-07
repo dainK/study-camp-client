@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles/SpaceSidebar.css';
 import { Link } from 'react-router-dom';
+import SocketManager from '../util/SocketManager';
 
 const SpaceSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +9,13 @@ const SpaceSidebar = () => {
   const [isCamActive, setIsCamActive] = useState(false);
   const [isShareActive, setIsShareActive] = useState(false);
   const [inButton, setInButton] = useState('home');
+
+  useEffect(() => {
+    SocketManager.getInstance().setSpaceMessagCallback(handleIncomingMessage);
+
+    // 컴포넌트가 언마운트 될 때 소켓 연결 종료
+    return () => {};
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -39,6 +47,40 @@ const SpaceSidebar = () => {
 
   const handleChangeOnline = () => {
     setInButton('online');
+  };
+
+  // Enter 키를 눌렀을 때 메시지 전송
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Enter 키의 기본 동작 방지 (줄바꿈 방지)
+      handleSend();
+    }
+  };
+  // const { messages, addMessage } = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const inputRef = useRef(null); // 입력 필드에 대한 참조 생성
+
+  const handleSend = () => {
+    if (input.trim() !== '') {
+      SocketManager.getInstance().sendSpaceMessage(input);
+      // setMessages([...messages, input]);
+      setInput('');
+      inputRef.current.focus(); // 입력 필드에 포커스 설정
+    }
+  };
+  // const handleSend = () => {
+  //   if (input.trim() !== '') {
+  //     SocketManager.getInstance().sendSpaceMessage(input);
+  //     setInput('');
+  //   }
+  // };
+
+  const handleIncomingMessage = (message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+    // setMessages([...messages, message]);
+    // setInput('');
+    // addMessage(message);
   };
 
   return (
@@ -98,11 +140,14 @@ const SpaceSidebar = () => {
 
       {inButton == 'chat' && (
         <div className="sidebar-container-chat">
+          <h3>전체 채팅</h3>
           <div className="chatroom-container">
             <div className="messages">
-              {messages.map((message, index) => (
+              {messages.map((msg, index) => (
                 <div key={index} className="message">
-                  {message}
+                  <strong style={{ color: '#226699' }}>{msg.nickName}</strong>
+                  <br />
+                  {msg.message}
                 </div>
               ))}
             </div>
@@ -111,7 +156,9 @@ const SpaceSidebar = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown} // Enter 키 이벤트 핸들러 추가
                 placeholder="Type a message..."
+                ref={inputRef} // 입력 필드에 대한 참조 설정
               />
               <button onClick={handleSend}>Send</button>
             </div>

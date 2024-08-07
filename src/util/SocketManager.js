@@ -12,6 +12,8 @@ export default class SocketManager {
     this.callbacks = [];
     // this.connect();
     // this.userData = UserDataManager.getInstance().getUserData();
+
+    this.spaceMessageCallback = null;
   }
 
   static getInstance() {
@@ -41,8 +43,9 @@ export default class SocketManager {
       withCredentials: true,
     });
 
+    UserDataManager.getInstance().enterSpace(this.socket.id, spaceId);
+
     this.socket.on('connect', async (socket) => {
-      UserDataManager.getInstance().enterSpace(this.socket.id, spaceId);
       console.log('connect');
     });
 
@@ -71,8 +74,15 @@ export default class SocketManager {
     });
 
     this.socket.on('sendSpaceMessage', (data) => {
-      console.log('sendSpaceMessage', data);
-      this.publish('sendSpaceMessage', data);
+      // console.log('sendSpaceMessage', data);
+      // this.publish('sendSpaceMessage', data);
+      // this.spaceMessageCallback(data);
+    });
+
+    this.socket.on('spaceMessage', (data) => {
+      console.log('spaceMessage', data);
+      // this.publish('spaceMessage', data);
+      this.spaceMessageCallback(data);
     });
 
     this.socket.on('sendLayerMessage', (data) => {
@@ -91,6 +101,10 @@ export default class SocketManager {
       this.socket.disconnect();
       this.socket = null;
     }
+  }
+
+  setSpaceMessagCallback(callback) {
+    this.spaceMessageCallback = callback;
   }
 
   joinSpace() {
@@ -133,6 +147,22 @@ export default class SocketManager {
   joinLayer(layer) {
     UserDataManager.getInstance().setLayer(layer);
     this.socket.emit('joinLayer', UserDataManager.getInstance().getUserData());
+  }
+
+  sendSpaceMessage(message) {
+    if (this.socket) {
+      this.socket.emit(
+        'sendSpaceMessage',
+        { ...UserDataManager.getInstance().getUserData(), message },
+        (response) => {
+          if (response.status === 'success') {
+            console.log(response.message);
+          } else {
+            console.error(response.message);
+          }
+        },
+      );
+    }
   }
 
   // leaveLayer(layer) {
