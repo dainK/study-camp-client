@@ -2,15 +2,40 @@ import React, { useState } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/Modal.css';
+import { requestEnterSpace } from '../../util/request';
 
 const EnterSpaceModal = ({ show, handleClose, space }) => {
   const [password, setPassword] = useState('');
-  const [isPublic, setIsPublic] = useState(space?.public || true);
+  console.log(space);
+  const [isPublic, setIsPublic] = useState(space.isPublic);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    console.log(isPublic);
     e.preventDefault();
     // 비밀번호를 검증하고 공간에 입장하는 로직을 추가합니다.
-    console.log('비밀번호:', password);
+    if (isPublic) {
+      const res = await requestEnterSpace({
+        spaceId: space.id,
+        password: '',
+      });
+      console.log(res);
+      if (!!res && !!res.url) {
+        window.location.href = `/space/${res.url}`;
+      } else {
+        alert('입장에 실패했습니다.');
+      }
+    } else {
+      const formData = new FormData(event.target);
+      const res = await requestEnterSpace({
+        spaceId: space.id,
+        password: formData.get('password'),
+      });
+      if (!!res && !!res.url) {
+        window.location.href = `/space/${res.url}`;
+      } else {
+        alert('비밀번호가 맞지 않습니다.');
+      }
+    }
     handleClose(); // 모달을 닫습니다.
   };
 
@@ -44,6 +69,7 @@ const EnterSpaceModal = ({ show, handleClose, space }) => {
               <Form.Label>비공개 방입니다</Form.Label>
               <Form.Control
                 type="password"
+                name="password"
                 placeholder="비밀번호를 입력하세요"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

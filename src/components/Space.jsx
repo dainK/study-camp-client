@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import Scene from '../phaser/Scene.js';
 import SpaceSidebar from './SpaceSidebar.jsx';
 import SocketManager from '../util/SocketManager.js';
+import { requestCheckSpace } from '../util/request.js';
 
 const Space = () => {
   const { id } = useParams();
@@ -15,10 +16,17 @@ const Space = () => {
         console.log('ID가 유효하지 않음:', id);
         navigate('/');
       } else {
-        console.log('유효한 ID:', id);
-        window.addEventListener('resize', handleWindowResize);
-        initGame();
-        await SocketManager.getInstance().connect();
+        const check = await requestCheckSpace(id);
+        console.log(check);
+        if (check) {
+          console.log('유효한 ID:', id);
+          window.addEventListener('resize', handleWindowResize);
+          initGame();
+          await SocketManager.getInstance().connect();
+        } else {
+          console.log('ID가 유효하지 않음:', id);
+          navigate('/');
+        }
       }
     };
 
