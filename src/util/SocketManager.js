@@ -49,7 +49,7 @@ export default class SocketManager {
   }
 
   async connect() {
-    this.socket = await io(import.meta.env.VITE_SERVER_URL, {
+    this.socket = await io(process.env.VITE_SERVER_URL, {
       withCredentials: true,
     });
 

@@ -3,8 +3,8 @@ import React from 'react';
 // import title from './images/title.png';
 import './styles/Header.css';
 import { Link } from 'react-router-dom';
-import { requestChekLogin, requestLogout } from '../util/request';
-
+// import { requestChekLogin, requestLogout } from '../util/request';
+import UserDataManager from '../util/UserDataManager';
 class Header extends React.Component {
   state = {
     isUser: false,
@@ -12,16 +12,18 @@ class Header extends React.Component {
 
   async componentDidMount() {
     try {
-      const check = await requestChekLogin();
-      this.setState({ isUser: check });
+      // const check = await requestChekLogin();
+      const isLogin = await UserDataManager.getInstance().checkLogin();
+      this.setState({ isUser: isLogin });
     } catch (error) {
       this.setState({ isUser: false });
     }
   }
 
   logout = async () => {
-    const res = await requestLogout();
+    // const res = await requestLogout();
     // console.log(res);
+    UserDataManager.getInstance().logOut();
     this.setState({ isUser: false });
   };
 

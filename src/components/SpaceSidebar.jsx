@@ -82,21 +82,42 @@ const SpaceSidebar = () => {
         </button>
       </div>
 
-      <div className="sidebar-container">
-        {inButton == 'home' && (
-          <>
-            <Link to="/" className="image-wrapper">
-              <img src="/title.png" className="responsive-image" />
-            </Link>
+      {inButton == 'home' && (
+        <div className="sidebar-container">
+          <Link to="/" className="image-wrapper">
+            <img src="/title.png" className="responsive-image" />
+          </Link>
 
-            <h3>스페이스이름</h3>
-            <div className="btn">초대코드</div>
-            <h3>닉네임</h3>
-            <div className="btn">닉네임 변경</div>
-            <div className="btn">캐릭터 꾸미기</div>
-          </>
-        )}
-      </div>
+          <h3>스페이스이름</h3>
+          <div className="btn">초대코드</div>
+          <h3>닉네임</h3>
+          <div className="btn">닉네임 변경</div>
+          <div className="btn">캐릭터 꾸미기</div>
+        </div>
+      )}
+
+      {inButton == 'chat' && (
+        <div className="sidebar-container-chat">
+          <div className="chatroom-container">
+            <div className="messages">
+              {messages.map((message, index) => (
+                <div key={index} className="message">
+                  {message}
+                </div>
+              ))}
+            </div>
+            <div className="input-container">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type a message..."
+              />
+              <button onClick={handleSend}>Send</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

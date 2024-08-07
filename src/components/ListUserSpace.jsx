@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 스타일을 임포트합니다.
 import './styles/List.css';
-import { requestChekLogin, requestAllSpaceList } from '../util/request';
+import { requestUserSpaceList, requestChekLogin } from '../util/request';
 import ReactPaginate from 'react-paginate';
 import EnterSpaceModal from './modal/EnterSpaceModal';
 import CreateSpaceModal from './modal/CreateSpaceModal';
 import InviteCodeModal from './modal/InviteCodeModal';
+import UserDataManager from '../util/UserDataManager';
 
 const ListUserSpace = () => {
   const [spaceList, setSpaceList] = useState([]);
@@ -23,9 +24,13 @@ const ListUserSpace = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const check = await requestChekLogin();
-        if (check) {
-          const spaces = await requestAllSpaceList();
+        const isLogin = await requestChekLogin();
+        // const isLogin = UserDataManager.getInstance().isLoginState();
+        // const isLogin = await requestChekLogin();
+        // console.log(isLogin);
+        if (isLogin) {
+          const spaces = await requestUserSpaceList();
+          // console.log(spaces);
           setSpaceList(spaces);
         } else {
           setSpaceList([]);
@@ -74,8 +79,8 @@ const ListUserSpace = () => {
   };
 
   const handleOpenCreateModal = async () => {
-    const check = await requestChekLogin();
-    if (check) {
+    const isLogin = UserDataManager.getInstance().isLoginState();
+    if (isLogin) {
       setShowCreateModal(true);
     } else {
       alert('로그인이 필요합니다.');

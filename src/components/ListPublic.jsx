@@ -20,6 +20,7 @@ const ListPublic = () => {
     const fetchData = async () => {
       try {
         const spaces = await requestAllSpaceList();
+        // console.log(spaces);
         setSpaceList(spaces);
         setLoading(false);
       } catch (err) {

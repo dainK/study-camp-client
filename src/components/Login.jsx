@@ -14,7 +14,6 @@ class Login extends React.Component {
     const res = await requestLogin({ email, password });
     console.log(res.data);
     if (!!res.data && res.data.access_token) {
-      // userInfo.nick_name = res.data.member_search.nick_name;
       window.location.href = '/';
     } else {
     }
