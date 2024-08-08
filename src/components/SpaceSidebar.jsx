@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './styles/SpaceSidebar.css';
 import { Link } from 'react-router-dom';
 import SocketManager from '../util/SocketManager';
+import UserDataManager from '../util/UserDataManager';
 
 const SpaceSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,10 +12,18 @@ const SpaceSidebar = () => {
   const [inButton, setInButton] = useState('home');
 
   useEffect(() => {
-    SocketManager.getInstance().setSpaceMessagCallback(handleIncomingMessage);
+    SocketManager.getInstance().setMessagCallback(
+      handleIncomingSpaceMessage,
+      handleIncomingRoomMessage,
+    );
 
-    // 컴포넌트가 언마운트 될 때 소켓 연결 종료
-    return () => {};
+    // 클릭 이벤트 리스너 추가
+    document.addEventListener('click', handleClickOutside);
+
+    // 컴포넌트가 언마운트 될 때 소켓 연결 종료 및 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, []);
 
   const toggleSidebar = () => {
@@ -49,38 +58,77 @@ const SpaceSidebar = () => {
     setInButton('online');
   };
 
+  // const { messages, addMessage } = useState([]);
+  const [sapceMessages, setSpaceMessages] = useState([]);
+  const [spaceMessageInput, setSpaceMessageInput] = useState('');
+  const spaceMessageInputRef = useRef(null); // 입력 필드에 대한 참조 생성
+
+  const [roomMessages, setRoomMessages] = useState([]);
+  const [roomMessageInput, setRoomMessageInput] = useState('');
+  const roomMessageInputRef = useRef(null); // 입력 필드에 대한 참조 생성
+
+  const addListener = () => {
+    UserDataManager.getInstance().setStateChat(true);
+  };
+
+  const removeListener = () => {
+    UserDataManager.getInstance().setStateChat(false);
+  };
+
+  const handleClickOutside = (event) => {
+    if (
+      spaceMessageInputRef.current &&
+      !spaceMessageInputRef.current.contains(event.target)
+    ) {
+      spaceMessageInputRef.current.blur(); // 입력 필드에서 포커스 제거
+      removeListener();
+    }
+    if (
+      roomMessageInputRef.current &&
+      !roomMessageInputRef.current.contains(event.target)
+    ) {
+      roomMessageInputRef.current.blur(); // 입력 필드에서 포커스 제거
+      removeListener();
+    }
+  };
+
   // Enter 키를 눌렀을 때 메시지 전송
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Enter 키의 기본 동작 방지 (줄바꿈 방지)
-      handleSend();
+      console.log(inButton);
+      if (inButton == 'chat') {
+        handleSendSpaceMessage();
+      }
+      if (inButton == 'room') {
+        handleSendRoomMessage();
+      }
     }
   };
-  // const { messages, addMessage } = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const inputRef = useRef(null); // 입력 필드에 대한 참조 생성
 
-  const handleSend = () => {
-    if (input.trim() !== '') {
-      SocketManager.getInstance().sendSpaceMessage(input);
-      // setMessages([...messages, input]);
-      setInput('');
-      inputRef.current.focus(); // 입력 필드에 포커스 설정
+  const handleSendSpaceMessage = () => {
+    if (spaceMessageInput.trim() !== '') {
+      SocketManager.getInstance().sendSpaceMessage(spaceMessageInput);
+      setSpaceMessageInput('');
+      spaceMessageInputRef.current.focus(); // 입력 필드에 포커스 설정
     }
   };
-  // const handleSend = () => {
-  //   if (input.trim() !== '') {
-  //     SocketManager.getInstance().sendSpaceMessage(input);
-  //     setInput('');
-  //   }
-  // };
 
-  const handleIncomingMessage = (message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-    // setMessages([...messages, message]);
-    // setInput('');
-    // addMessage(message);
+  const handleIncomingSpaceMessage = (message) => {
+    setSpaceMessages((prevMessages) => [...prevMessages, message]);
+  };
+
+  const handleSendRoomMessage = () => {
+    if (roomMessageInput.trim() !== '') {
+      SocketManager.getInstance().sendRoomMessage(roomMessageInput);
+      setRoomMessageInput('');
+      roomMessageInputRef.current.focus(); // 입력 필드에 포커스 설정
+    }
+  };
+
+  const handleIncomingRoomMessage = (message) => {
+    console.log(message);
+    setRoomMessages((prevMessages) => [...prevMessages, message]);
   };
 
   return (
@@ -143,7 +191,7 @@ const SpaceSidebar = () => {
           <h3>전체 채팅</h3>
           <div className="chatroom-container">
             <div className="messages">
-              {messages.map((msg, index) => (
+              {sapceMessages.map((msg, index) => (
                 <div key={index} className="message">
                   <strong style={{ color: '#226699' }}>{msg.nickName}</strong>
                   <br />
@@ -154,13 +202,45 @@ const SpaceSidebar = () => {
             <div className="input-container">
               <input
                 type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+                value={spaceMessageInput}
+                onChange={(e) => setSpaceMessageInput(e.target.value)}
                 onKeyDown={handleKeyDown} // Enter 키 이벤트 핸들러 추가
                 placeholder="Type a message..."
-                ref={inputRef} // 입력 필드에 대한 참조 설정
+                ref={spaceMessageInputRef}
+                onFocus={addListener}
+                onBlur={removeListener}
               />
-              <button onClick={handleSend}>Send</button>
+              <button onClick={handleSendSpaceMessage}>Send</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {inButton == 'room' && (
+        <div className="sidebar-container-chat">
+          <h3>구역 채팅</h3>
+          <div className="chatroom-container">
+            <div className="messages">
+              {roomMessages.map((msg, index) => (
+                <div key={index} className="message">
+                  <strong style={{ color: '#226699' }}>{msg.nickName}</strong>
+                  <br />
+                  {msg.message}
+                </div>
+              ))}
+            </div>
+            <div className="input-container">
+              <input
+                type="text"
+                value={roomMessageInput}
+                onChange={(e) => setRoomMessageInput(e.target.value)}
+                onKeyDown={handleKeyDown} // Enter 키 이벤트 핸들러 추가
+                placeholder="Type a message..."
+                ref={roomMessageInputRef}
+                onFocus={addListener}
+                onBlur={removeListener}
+              />
+              <button onClick={handleSendSpaceMessage}>Send</button>
             </div>
           </div>
         </div>

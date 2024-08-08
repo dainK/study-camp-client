@@ -14,6 +14,7 @@ export default class SocketManager {
     // this.userData = UserDataManager.getInstance().getUserData();
 
     this.spaceMessageCallback = null;
+    this.roomMessageCallback = null;
   }
 
   static getInstance() {
@@ -73,21 +74,20 @@ export default class SocketManager {
       this.publish('leaveLayer', data);
     });
 
-    this.socket.on('sendSpaceMessage', (data) => {
-      // console.log('sendSpaceMessage', data);
-      // this.publish('sendSpaceMessage', data);
-      // this.spaceMessageCallback(data);
-    });
+    // this.socket.on('sendSpaceMessage', (data) => {
+    // });
 
     this.socket.on('spaceMessage', (data) => {
       console.log('spaceMessage', data);
-      // this.publish('spaceMessage', data);
       this.spaceMessageCallback(data);
     });
 
-    this.socket.on('sendLayerMessage', (data) => {
-      console.log('sendLayerMessage', data);
-      this.publish('sendLayerMessage', data);
+    // this.socket.on('sendLayerMessage', (data) => {
+    // });
+
+    this.socket.on('layerMessage', (data) => {
+      console.log('layerMessage', data);
+      this.roomMessageCallback(data);
     });
 
     this.socket.on('movePlayer', (data) => {
@@ -103,8 +103,9 @@ export default class SocketManager {
     }
   }
 
-  setSpaceMessagCallback(callback) {
-    this.spaceMessageCallback = callback;
+  setMessagCallback(spaceMessageCallback, roomMessageCallback) {
+    this.spaceMessageCallback = spaceMessageCallback;
+    this.roomMessageCallback = roomMessageCallback;
   }
 
   joinSpace() {
@@ -153,6 +154,22 @@ export default class SocketManager {
     if (this.socket) {
       this.socket.emit(
         'sendSpaceMessage',
+        { ...UserDataManager.getInstance().getUserData(), message },
+        (response) => {
+          if (response.status === 'success') {
+            console.log(response.message);
+          } else {
+            console.error(response.message);
+          }
+        },
+      );
+    }
+  }
+
+  sendRoomMessage(message) {
+    if (this.socket) {
+      this.socket.emit(
+        'sendLayerMessage',
         { ...UserDataManager.getInstance().getUserData(), message },
         (response) => {
           if (response.status === 'success') {

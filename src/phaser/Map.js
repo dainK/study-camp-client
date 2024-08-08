@@ -1,4 +1,4 @@
-import MapData from './defines/MapData'
+import MapData from './defines/MapData';
 
 class Map {
   layers = [];
@@ -23,7 +23,7 @@ class Map {
   getMapHeight() {
     return MapData.tileSize * MapData.row;
   }
-  
+
   createBaseTileMap() {
     const tileMap = [];
 
@@ -59,10 +59,14 @@ class Map {
       tileMap.push(row);
     }
 
-    this.addLayer(tileMap,0,0);
+    this.addLayer(tileMap, 0, 0);
   }
 
-  addLayer(tileMapData,x,y) {
+  getLayers() {
+    return this.layers;
+  }
+
+  addLayer(tileMapData, x, y) {
     const tileMap = this.scene.make.tilemap({
       data: tileMapData,
       tileWidth: MapData.tileSize,
@@ -75,7 +79,7 @@ class Map {
       MapData.tileSize * x,
       MapData.tileSize * y,
     );
-    newGroupLayer.setName('layer_' + this.layers.length);
+    newGroupLayer.setName(this.layers.length);
     this.layers.push(newGroupLayer);
   }
 
@@ -89,7 +93,7 @@ class Map {
       [9, 10, 10, 10, 10, 11],
       [15, 16, 16, 16, 16, 17],
     ];
-    this.addLayer(group,x,y);
+    this.addLayer(group, x, y);
 
     this.scene.m_table0 = this.scene.add
       .sprite(
@@ -98,14 +102,14 @@ class Map {
         'table',
       )
       .setOrigin(0, 0);
-      this.scene.m_table1 = this.scene.add
+    this.scene.m_table1 = this.scene.add
       .sprite(
         MapData.tileSize * (x + 1) - MapData.tileSize / 2,
         MapData.tileSize * (y + 1),
         'table',
       )
       .setOrigin(0, 0);
-      this.scene.m_table2 = this.scene.add
+    this.scene.m_table2 = this.scene.add
       .sprite(
         MapData.tileSize * (x + 1) - MapData.tileSize / 2,
         MapData.tileSize * (y + 3),
@@ -113,5 +117,5 @@ class Map {
       )
       .setOrigin(0, 0);
   }
-};
+}
 export default Map;

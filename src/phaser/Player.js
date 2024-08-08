@@ -1,6 +1,7 @@
 // import SocketManager from '../managers/socket';
 import MapData from './defines/MapData';
 import SocketManager from '../util/SocketManager';
+import UserDataManager from '../util/UserDataManager';
 
 export default class Player {
   constructor(scene, data) {
@@ -99,6 +100,8 @@ export default class Player {
   handleKeyPress(event) {
     var deltaX = 0;
     var deltaY = 0;
+
+    if (UserDataManager.getInstance().getStateChat()) return;
 
     switch (event.code) {
       case 'ArrowLeft':
@@ -276,7 +279,7 @@ export default class Player {
       ease: 'Linear',
       onComplete: function () {
         // console.log(self.x, self.y);
-        // self.scene.innerLayer();
+        self.scene.checkLayer();
         self.checkKeyPress();
       },
     });

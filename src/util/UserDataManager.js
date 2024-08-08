@@ -24,6 +24,7 @@ export default class UserDataManager {
     };
 
     this.isLogin = false;
+    this.isChat = false;
   }
 
   static getInstance() {
@@ -60,6 +61,14 @@ export default class UserDataManager {
 
   getUserData() {
     return this.userData;
+  }
+
+  setStateChat(b) {
+    this.isChat = b;
+  }
+
+  getStateChat() {
+    return this.isChat;
   }
 
   setPosition(x, y) {

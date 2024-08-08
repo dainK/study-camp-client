@@ -12,6 +12,7 @@ import Player from './Player.js';
 import OtherPlayer from './OtherPlayer.js';
 
 import SocketManager from '../util/SocketManager.js';
+import UserDataManager from '../util/UserDataManager.js';
 
 const skinFiles = import.meta.glob('./assets/sprites/skin/*.png', {
   eager: false,
@@ -31,7 +32,7 @@ export default class Scene extends Phaser.Scene {
     super('Scene');
   }
 
-  preload() {
+  async preload() {
     // FONT
     // this.load.bitmapFont('pixelFont', fontPng, fontXml);
 
@@ -74,10 +75,10 @@ export default class Scene extends Phaser.Scene {
     }
 
     // loadAll 함수를 호출하여 모든 스프라이트 시트 로딩 시작
-    loadAll.call(this).then(() => {
-      console.log('모든 스프라이트 시트 로딩 완료');
-      // 여기에 모든 로딩이 완료된 후의 로직을 추가할 수 있습니다.
-    });
+    await loadAll();
+    console.log('모든 스프라이트 시트 로딩 완료');
+    // 이 시점에서 모든 자산 로딩이 완료되었습니다
+    // 로딩이 완료된 후의 처리가 필요하면 여기에 작성합니다
   }
 
   create() {
@@ -127,10 +128,8 @@ export default class Scene extends Phaser.Scene {
     switch (namespace) {
       case 'joinSpace':
         {
-          // console.log(SocketManager.getInstance().getID());
           data.forEach((playerdata) => {
             if (playerdata.id !== SocketManager.getInstance().getID()) {
-              // console.log(playerdata.id);
               if (!this.otherPlayers[playerdata.id]) {
                 this.otherPlayers[playerdata.id] = new OtherPlayer(
                   this,
@@ -145,7 +144,6 @@ export default class Scene extends Phaser.Scene {
       case 'leaveSpace':
         if (this.otherPlayers[data.id]) {
           const leavePlayer = this.otherPlayers[data.id];
-          // leavePlayer.remove();
           leavePlayer.destroy();
           this.otherPlayers[data.id] = null;
         }
@@ -153,12 +151,32 @@ export default class Scene extends Phaser.Scene {
 
       case 'movePlayer':
         if (this.otherPlayers[data.id]) {
-          // console.log(data.x, data.y);
           const leavePlayer = this.otherPlayers[data.id];
           leavePlayer.moveOtherPlayer(data.x, data.y);
-          // this.otherPlayers[data.id] = null;
         }
         break;
     }
+  }
+
+  checkLayer() {
+    console.log(this.map.getLayers());
+    this.map.getLayers().forEach((layer) => {
+      layer.setAlpha(0.3);
+      if (
+        Phaser.Geom.Rectangle.Contains(
+          layer.getBounds(),
+          this.player.getSprite().x,
+          this.player.getSprite().y,
+        )
+      ) {
+        layer.setAlpha(1);
+        if (
+          layer.name !=
+          UserDataManager.getInstance().getUserData().layer.toString()
+        ) {
+          SocketManager.getInstance().joinLayer(layer.name);
+        }
+      }
+    });
   }
 }
