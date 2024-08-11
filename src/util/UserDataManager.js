@@ -93,7 +93,7 @@ export default class UserDataManager {
       hair_color: 0,
       clothes: 0,
       clothes_color: 0,
-      layer: 0,
+      layer: -1,
     };
   }
 

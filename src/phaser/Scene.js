@@ -117,6 +117,8 @@ export default class Scene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
     // 플레이어에 물리 엔진 활성화
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
+
+    this.checkLayer();
   }
 
   update() {
@@ -127,18 +129,25 @@ export default class Scene extends Phaser.Scene {
     console.log('eventscallback' + '_' + namespace);
     switch (namespace) {
       case 'joinSpace':
-        {
-          data.forEach((playerdata) => {
-            if (playerdata.id !== SocketManager.getInstance().getID()) {
-              if (!this.otherPlayers[playerdata.id]) {
-                this.otherPlayers[playerdata.id] = new OtherPlayer(
-                  this,
-                  playerdata,
-                );
-              }
-            }
-          });
+        if (data.id !== SocketManager.getInstance().getID()) {
+          if (!this.otherPlayers[data.id]) {
+            this.otherPlayers[data.id] = new OtherPlayer(this, data);
+          }
         }
+        break;
+
+      case 'spaceUsers':
+        data.forEach((playerdata) => {
+          if (playerdata.id !== SocketManager.getInstance().getID()) {
+            if (!this.otherPlayers[playerdata.id]) {
+              this.otherPlayers[playerdata.id] = new OtherPlayer(
+                this,
+                playerdata,
+              );
+            }
+          }
+        });
+
         break;
 
       case 'leaveSpace':
@@ -159,7 +168,7 @@ export default class Scene extends Phaser.Scene {
   }
 
   checkLayer() {
-    console.log(this.map.getLayers());
+    // console.log(this.map.getLayers());
     this.map.getLayers().forEach((layer) => {
       layer.setAlpha(0.3);
       if (
@@ -171,7 +180,7 @@ export default class Scene extends Phaser.Scene {
       ) {
         layer.setAlpha(1);
         if (
-          layer.name !=
+          layer.name.toString() !=
           UserDataManager.getInstance().getUserData().layer.toString()
         ) {
           SocketManager.getInstance().joinLayer(layer.name);

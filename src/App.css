@@ -12,14 +12,14 @@ body,
 ::-webkit-scrollbar {
   width: 12px; /* 스크롤바의 너비 */
   height: 12px; /* 가로 스크롤바의 높이 */
-  z-index: 500;
+  /* z-index: 500; */
 }
 
 /* 스크롤바 트랙 (스크롤바 배경) */
 ::-webkit-scrollbar-track {
   background: #f1f1f1; /* 배경 색상 */
   border-radius: 10px; /* 모서리 둥글기 */
-  z-index: 500;
+  /* z-index: 500; */
   background: white;
 }
 
@@ -27,13 +27,13 @@ body,
 ::-webkit-scrollbar-thumb {
   background: #888; /* 핸들의 배경 색상 */
   border-radius: 10px; /* 핸들의 모서리 둥글기 */
-  z-index: 500;
+  /* z-index: 500; */
   background: white;
 }
 /* 핸들 호버 상태 */
 ::-webkit-scrollbar-thumb:hover {
   background: #555; /* 핸들의 배경 색상이 변경됨 */
-  z-index: 500;
+  /* z-index: 500; */
   background: white;
 }
 

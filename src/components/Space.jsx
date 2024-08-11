@@ -68,9 +68,9 @@ const Space = () => {
 
   return (
     <>
+      <SpaceSidebar />
       {/* <Title /> */}
       <div className="phaser-game" />
-      <SpaceSidebar />
     </>
   );
 };

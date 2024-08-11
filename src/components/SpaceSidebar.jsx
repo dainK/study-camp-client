@@ -16,6 +16,11 @@ const SpaceSidebar = () => {
       handleIncomingSpaceMessage,
       handleIncomingRoomMessage,
     );
+    SocketManager.getInstance().setMessagCallback(
+      setIsCamActive,
+      setIsShareActive,
+      setIsMicActive,
+    );
 
     // 클릭 이벤트 리스너 추가
     document.addEventListener('click', handleClickOutside);
@@ -35,10 +40,20 @@ const SpaceSidebar = () => {
   };
 
   const handleCamClick = () => {
+    if (!isCamActive) {
+      SocketManager.getInstance().startCamera();
+    } else {
+      SocketManager.getInstance().stopCamera();
+    }
     setIsCamActive(!isCamActive);
   };
 
   const handleShareClick = () => {
+    if (!isShareActive) {
+      SocketManager.getInstance().startScreenShare();
+    } else {
+      SocketManager.getInstance().stopScreenShare();
+    }
     setIsShareActive(!isShareActive);
   };
 
@@ -56,6 +71,17 @@ const SpaceSidebar = () => {
 
   const handleChangeOnline = () => {
     setInButton('online');
+  };
+  // 상태 추가: 카드 목록
+  const [cards, setCards] = useState([]);
+  // 카드 추가 함수
+  const addCard = (userId, id) => {
+    setCards((prevCards) => [...prevCards, { id }]); // 빈 객체를 추가하여 카드 생성
+  };
+
+  // 카드 제거 함수
+  const removeCard = (id) => {
+    setCards((prevCards) => prevCards.filter((card) => card.id !== id));
   };
 
   // const { messages, addMessage } = useState([]);
@@ -133,6 +159,18 @@ const SpaceSidebar = () => {
 
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div className="webrtc-container">
+        <div className="webrtc-card-container" id="webrtc-card-container">
+          {/* {cards.map((card, index) => {
+            const id = card.id;
+
+            return (
+              <div key={index} id={id} className="webrtc-card">
+              </div>
+            );
+          })} */}
+        </div>
+      </div>
       <div className="buttonbox">
         <button className="sidebar-btn" onClick={handleMicClick}>
           <span className="material-symbols-outlined">
