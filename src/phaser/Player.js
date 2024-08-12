@@ -8,8 +8,13 @@ export default class Player {
     this.scene = scene;
     this.data = data;
     this.userId = data.userId;
+    // if (data.nickName == 'GUEST') {
+    //   data.nickName = `${data.nickName}${data.id.slice(0, 4)}`;
+    //   UserDataManager.getInstance().setUserNickName(data.nickName);
+    // }
     this.nickName = data.nickName;
     // this.memberId = data.memberId;
+    console.log(data);
 
     this.m_cursorKeys = this.scene.input.keyboard.createCursorKeys();
     this.wKey = this.scene.input.keyboard.addKey('W');
@@ -53,7 +58,7 @@ export default class Player {
     //   this.clothesSprite,
     //   this.hairSprite,
     // );
-    this.nicknameText = this.scene.add.text(0, 0, 'text' /*this.nickName*/, {
+    this.nicknameText = this.scene.add.text(0, 0, this.nickName, {
       fontSize: '16px',
       fill: '#ffffff',
       // backgroundColor: '#000000',
@@ -63,6 +68,7 @@ export default class Player {
       },
     });
     this.nicknameText.setOrigin(0.5, 1.5);
+    this.nicknameText.x = this.skinSprite.width / 2;
 
     // 컨테이너 생성
     this.player = this.scene.add.container(

@@ -265,6 +265,14 @@ export default class SocketManager {
       // console.log('movePlayer', data);
       this.publish('movePlayer', data);
     });
+    this.socket.on('changeNickName', (data) => {
+      // console.log('movePlayer', data);
+      this.publish('changeNickName', data);
+    });
+    this.socket.on('changeSkin', (data) => {
+      // console.log('movePlayer', data);
+      this.publish('changeSkin', data);
+    });
 
     this.socket.on('offer', async (data) => {
       // const { offer, socketId } = data;
@@ -584,7 +592,7 @@ export default class SocketManager {
     this.roomMessageCallback = roomMessageCallback;
   }
 
-  setMessagCallback(setCameraFunc, setScreenFunc, setVoiceFunc) {
+  setButtonCallback(setCameraFunc, setScreenFunc, setVoiceFunc) {
     this.setCameraFunc = setCameraFunc;
     this.setScreenFunc = setScreenFunc;
     this.setVoiceFunc = setVoiceFunc;

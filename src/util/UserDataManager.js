@@ -11,15 +11,15 @@ export default class UserDataManager {
     this.userData = {
       id: '',
       spaceId: 0,
-      nickName: '닉네임',
+      nickName: 'GUEST',
       x: 1,
       y: 1,
-      skin: 0,
-      face: 0,
-      hair: 0,
-      hair_color: 0,
-      clothes: 0,
-      clothes_color: 0,
+      skin: Math.floor(Math.random() * 13),
+      face: Math.floor(Math.random() * 65),
+      hair: Math.floor(Math.random() * 10),
+      hair_color: Math.floor(Math.random() * 12),
+      clothes: Math.floor(Math.random() * 7),
+      clothes_color: Math.floor(Math.random() * 12),
       layer: 0,
     };
 
@@ -87,13 +87,13 @@ export default class UserDataManager {
       nickName: 'GUEST',
       x: 1,
       y: 1,
-      skin: 0,
-      face: 0,
-      hair: 0,
-      hair_color: 0,
-      clothes: 0,
-      clothes_color: 0,
-      layer: -1,
+      skin: Math.floor(Math.random() * 13),
+      face: Math.floor(Math.random() * 65),
+      hair: Math.floor(Math.random() * 10),
+      hair_color: Math.floor(Math.random() * 12),
+      clothes: Math.floor(Math.random() * 7),
+      clothes_color: Math.floor(Math.random() * 12),
+      layer: '0',
     };
   }
 
@@ -101,15 +101,18 @@ export default class UserDataManager {
     this.userData.id = id;
   }
 
-  setUserData(data) {
+  setUserSkinData(data) {
     this.userData.id = data.id;
-    this.userData.nickName = data.nickName;
     this.userData.skin = data.skin;
     this.userData.face = data.face;
     this.userData.hair = data.hair;
     this.userData.hair_color = data.hair_color;
     this.userData.clothes = data.clothes;
     this.userData.clothes_color = data.clothes_color;
+  }
+
+  setUserNickName(nickName) {
+    this.userData.nickName = nickName;
   }
 
   enterSpace(socketId, spaceId) {

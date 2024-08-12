@@ -16,7 +16,7 @@ const SpaceSidebar = () => {
       handleIncomingSpaceMessage,
       handleIncomingRoomMessage,
     );
-    SocketManager.getInstance().setMessagCallback(
+    SocketManager.getInstance().setButtonCallback(
       setIsCamActive,
       setIsShareActive,
       setIsMicActive,

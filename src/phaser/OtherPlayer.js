@@ -8,6 +8,7 @@ export default class OtherPlayer {
     this.nickName = data.nickName;
     // this.x = data.x;
     // this.y = data.y;
+    console.log(data);
 
     this.tilePos = { x: data.x, y: data.y };
     this.isMove = false;
@@ -34,7 +35,7 @@ export default class OtherPlayer {
     this.hairSprite = this.scene.physics.add.sprite(0, 0, hair);
     this.hairSprite.setOrigin(0, 0.5);
 
-    this.nicknameText = this.scene.add.text(0, 0, 'text' /*this.nickName*/, {
+    this.nicknameText = this.scene.add.text(0, 0, this.nickName, {
       fontSize: '16px',
       fill: '#ffffff',
       // backgroundColor: '#000000',
@@ -44,6 +45,7 @@ export default class OtherPlayer {
       },
     });
     this.nicknameText.setOrigin(0.5, 1.5);
+    this.nicknameText.x = this.skinSprite.width / 2;
 
     // 컨테이너 생성
     this.player = this.scene.add.container(
@@ -258,10 +260,10 @@ export default class OtherPlayer {
   }
 
   playAnimation(playdata) {
-    this.skinSprite.play(this.data.memberId + '_' + playdata + '_skin');
-    this.hairSprite.play(this.data.memberId + '_' + playdata + '_hair');
-    this.clothesSprite.play(this.data.memberId + '_' + playdata + '_clothes');
-    this.faceSprite.play(this.data.memberId + '_' + playdata + '_face');
+    this.skinSprite.play(this.data.id + '_' + playdata + '_skin');
+    this.hairSprite.play(this.data.id + '_' + playdata + '_hair');
+    this.clothesSprite.play(this.data.id + '_' + playdata + '_clothes');
+    this.faceSprite.play(this.data.id + '_' + playdata + '_face');
   }
 
   createAnimation(playdata, framedata, repeatdata) {
@@ -272,45 +274,45 @@ export default class OtherPlayer {
       'clothes-' + (this.data.clothes * 12 + this.data.clothes_color + 1);
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_skin',
+      key: this.data.id + '_' + playdata + '_skin',
       frames: this.scene.anims.generateFrameNumbers(skin, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_face',
+      key: this.data.id + '_' + playdata + '_face',
       frames: this.scene.anims.generateFrameNumbers(face, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_clothes',
+      key: this.data.id + '_' + playdata + '_clothes',
       frames: this.scene.anims.generateFrameNumbers(hair, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_hair',
+      key: this.data.id + '_' + playdata + '_hair',
       frames: this.scene.anims.generateFrameNumbers(clothes, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
   }
   removeAnimation(ani) {
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_skin')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_skin');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_skin')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_skin');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_face')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_face');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_face')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_face');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_clothes')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_clothes');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_clothes')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_clothes');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_hair')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_hair');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_hair')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_hair');
     }
   }
 

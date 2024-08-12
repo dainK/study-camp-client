@@ -7,7 +7,7 @@ import table from './assets/images/table.png';
 // class
 import Map from './Map.js';
 import MapData from './defines/MapData.js';
-import PlayerData from './defines/PlayerData.js';
+// import PlayerData from './defines/PlayerData.js';
 import Player from './Player.js';
 import OtherPlayer from './OtherPlayer.js';
 
@@ -111,7 +111,7 @@ export default class Scene extends Phaser.Scene {
       this.cameras.main.zoom = Phaser.Math.Clamp(newZoom, maxZoom, 2);
     });
 
-    this.player = new Player(this, { ...PlayerData, x: 1, y: 1 });
+    this.player = new Player(this, UserDataManager.getInstance().getUserData());
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
     this.cameras.main.setBounds(0, 0, bgWidth, bgHeight);
     this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
