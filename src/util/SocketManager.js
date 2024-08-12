@@ -10,8 +10,6 @@ export default class SocketManager {
     this.instance = this;
 
     this.callbacks = [];
-    // this.connect();
-    // this.userData = UserDataManager.getInstance().getUserData();
 
     this.spaceMessageCallback = null;
     this.roomMessageCallback = null;
@@ -20,19 +18,27 @@ export default class SocketManager {
     this.setScreenFunc = null;
     this.setVoiceFunc = null;
 
+    this.layerUsers = [];
+    this.myCard = null;
+    this.myStream = null;
     this.mediaStream = null;
     this.screenStream = null;
-    // this.audioStream = null;
-    // this.layerPeerIds = [];
+    this.audioStream = null;
+
     this.peerConnections = {};
     this.servers = {
       iceServers: [
         {
-          urls: 'stun:stun.l.google.com:19302',
+          urls: [
+            'stun:stun.l.google.com:19302',
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
+            'stun:stun3.l.google.com:19302',
+            'stun:stun4.l.google.com:19302',
+          ],
         },
       ],
     };
-    this.myCard = null;
   }
 
   static getInstance() {
@@ -69,6 +75,7 @@ export default class SocketManager {
       this.myCard = document.createElement('video');
       this.myCard.id = `card_my`;
       this.myCard.autoplay = true;
+      this.myCard.muted = true;
       this.myCard.width = 160;
       this.myCard.height = 120;
       this.myCard.style.backgroundColor = 'white'; // 원하는 색상으로 변경 가능
@@ -76,35 +83,22 @@ export default class SocketManager {
       document.getElementById('webrtc-card-container').appendChild(this.myCard);
     }
 
-    try {
-      if (!this.mediaStream) {
-        this.mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        this.mediaStream
-          .getVideoTracks()
-          .forEach((track) => (track.enabled = false));
+    // 더미 오디오
+    this.audioContext = new AudioContext();
 
-        this.myCard.srcObject = this.mediaStream;
-      }
-    } catch (error) {
-      console.error('미디어 장치에 접근할 수 없습니다:', error);
-      // alert('카메라 또는 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
-    }
-
-    try {
-      if (!this.audioStream) {
-        this.audioStream = await await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        this.audioStream
-          .getAudioTracks()
-          .forEach((track) => (track.enabled = false));
-      }
-    } catch (error) {
-      // console.error('미디어 장치에 접근할 수 없습니다:', error);
-      // alert('카메라 또는 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
-    }
+    // try {
+    //   if (!this.audioStream) {
+    //     this.audioStream = await await navigator.mediaDevices.getUserMedia({
+    //       audio: true,
+    //     });
+    //     this.audioStream
+    //       .getAudioTracks()
+    //       .forEach((track) => (track.enabled = false));
+    //   }
+    // } catch (error) {
+    //   // console.error('미디어 장치에 접근할 수 없습니다:', error);
+    //   // alert('카메라 또는 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
+    // }
 
     // try {
     //   if (!this.screenStream) {
@@ -129,6 +123,7 @@ export default class SocketManager {
     this.socket.on('disconnect', async (socket) => {
       console.log('disconnect');
       // this.publish('disconnect', {id:this.socketID});
+      this.removeCard(data);
     });
 
     this.socket.on('joinSpace', async (data) => {
@@ -137,59 +132,65 @@ export default class SocketManager {
 
     this.socket.on('spaceUsers', async (spaceUsers) => {
       this.publish('spaceUsers', spaceUsers);
-
-      spaceUsers.forEach((data) => {
-        if (data.id !== this.socket.id && !this.peerConnections[data.id]) {
-          console.log(`Initiating peer connection with user: ${data.id}`);
-          this.createOffer(data.id);
-        }
-      });
     });
 
     this.socket.on('leaveSpace', (data) => {
-      console.log('leaveSpace', data);
+      // console.log('leaveSpace', data);
+      this.removeCard(data);
 
-      let video = document.getElementById(`card_${data.id}_camera`);
-      if (video) {
-        video.style.display = 'none';
-        video.remove();
-      }
+      // let video = document.getElementById(`card_${data.id}_camera`);
+      // if (video) {
+      //   video.style.display = 'none';
+      //   video.remove();
+      // }
       // this.stopStreams();
       this.publish('leaveSpace', data);
     });
 
     this.socket.on('joinLayer', async (data) => {
-      console.log('joinLayer', data);
-      let video = document.getElementById(`card_${data.id}_camera`);
-      if (video) {
-        video.style.display = 'block';
+      if (data.id != this.socket.id) {
+        this.layerUsers.push(data);
+        console.log('joinLayer', data);
+        this.createCard(data);
+        if (this.mediaStream) {
+          this.createOffer(data.id, 'media');
+          this.hideCard(data.id);
+        }
       }
       this.publish('joinLayer', data);
     });
 
     this.socket.on('layerUsers', async (layerUsers) => {
       console.log('Layer users', layerUsers);
+      this.layerUsers.forEach((data) => {
+        if (data.id != this.socket.id) {
+          this.removeCard(data);
+        }
+      });
       // this.cleanUpConnections(); // 기존 연결 정리
       // await this.handleNewLayerUsers(layerUsers);
       layerUsers.forEach((data) => {
-        let video = document.getElementById(`card_${data.id}_camera`);
-        if (video) {
-          video.style.display = 'block';
+        if (data.id != this.socket.id) {
+          this.createCard(data);
         }
       });
+      this.layerUsers = layerUsers;
 
       this.publish('layerUsers', layerUsers);
     });
 
     this.socket.on('leaveLayer', (data) => {
-      if (data.id != this.socket.id) {
-        let video = document.getElementById(`card_${data.id}_camera`);
-        if (video) {
-          video.style.display = 'none';
-        }
-      }
-
       console.log('Left layer', data);
+      this.layerUsers = this.layerUsers.filter((user) => user.id !== data.id);
+
+      // if (data.id != this.socket.id) {
+      //   let video = document.getElementById(`card_${data.id}_camera`);
+      //   if (video) {
+      //     video.style.display = 'none';
+      //   }
+      // }
+      this.removeCard(data);
+
       this.publish('leaveLayer', data);
     });
 
@@ -218,10 +219,16 @@ export default class SocketManager {
       // const { offer, socketId } = data;
       // console.log('Received offer from', socketId);
       // await this.handleOffer(offer, socketId);
-      console.log(`Received offer from user: ${data.sender}`);
+      // console.log(`Received offer from user: ${data.sender}`);
       if (data.sender !== this.socket.id) {
-        if (!this.peerConnections[data.sender]) {
-          const peerConnection = this.createPeerConnection(data.sender);
+        const name = data.sender + '_' + data.status;
+        // console.log(`offer`);
+        if (!this.peerConnections[name]) {
+          console.log(`createAnswer`);
+          const peerConnection = await this.createAnswerPeerConnection(
+            data.sender,
+            data.status,
+          );
           try {
             await peerConnection.setRemoteDescription(
               new RTCSessionDescription(data.sdp),
@@ -231,6 +238,7 @@ export default class SocketManager {
             this.socket.emit('answer', {
               sdp: peerConnection.localDescription,
               target: data.sender,
+              status: data.status,
             });
           } catch (error) {
             console.error('Error handling offer:', error);
@@ -241,12 +249,13 @@ export default class SocketManager {
 
     this.socket.on('answer', async (data) => {
       // const { answer, socketId } = data;
-      // console.log('Received answer from', socketId);
       // await this.handleAnswer(answer, socketId);
-      console.log(`Received answer from user: ${data.sender}`);
-      if (data.sender !== this.socket.id && this.peerConnections[data.sender]) {
+      // console.log(`Received answer from user: ${data.sender}`);
+      const name = data.sender + '_' + data.status + '_res';
+      console.log('answer');
+      if (data.sender !== this.socket.id && this.peerConnections[name]) {
         try {
-          await this.peerConnections[data.sender].setRemoteDescription(
+          await this.peerConnections[name].setRemoteDescription(
             new RTCSessionDescription(data.sdp),
           );
         } catch (error) {
@@ -259,10 +268,11 @@ export default class SocketManager {
       // const { candidate, socketId } = data;
       // console.log('Received candidate from', socketId);
       // await this.handleCandidate(candidate, socketId);
-      console.log(`Received ICE candidate from user: ${data.sender}`);
-      if (data.sender !== this.socket.id && this.peerConnections[data.sender]) {
+      console.log(`candidate: ${data.sender}`);
+      const name = data.sender + '_' + data.status;
+      if (data.sender !== this.socket.id && this.peerConnections[name]) {
         try {
-          await this.peerConnections[data.sender].addIceCandidate(
+          await this.peerConnections[name].addIceCandidate(
             new RTCIceCandidate(data.candidate),
           );
         } catch (error) {
@@ -273,24 +283,47 @@ export default class SocketManager {
 
     this.socket.on('cameraon', async (id) => {
       if (id != this.socket.id) {
-        let card = document.getElementById(`card_${id}`);
-        if (card) {
-          card.style.display = 'none';
-        }
-        const video = document.getElementById(`card_${id}_camera`);
-        if (video) {
-          video.style.display = 'block';
-        }
+        this.hideCard(id);
+      } else {
       }
     });
     this.socket.on('cameraoff', async (id) => {
-      let card = document.getElementById(`card_${id}`);
-      if (card) {
-        card.style.display = 'block';
-      }
-      const video = document.getElementById(`card_${id}_camera`);
-      if (video) {
-        video.style.display = 'none';
+      if (id != this.socket.id) {
+        for (const key in this.peerConnections) {
+          if (this.peerConnections.hasOwnProperty(key)) {
+            // Check if the key includes 'camera' or 'res'
+            if (key.includes('camera') && key.includes(`${id}`)) {
+              // Get the peer connection
+              const peerConnection = this.peerConnections[key];
+              // 1. 모든 트랙을 중지하고 제거합니다
+              peerConnection.getReceivers().forEach((receiver) => {
+                const track = receiver.track;
+                if (track) {
+                  track.stop();
+                }
+              });
+
+              // 2. 연결된 스트림을 제거합니다
+              peerConnection.getTransceivers().forEach((transceiver) => {
+                transceiver.sender.replaceTrack(null);
+              });
+
+              // 3. 연결을 종료합니다
+              peerConnection.close();
+
+              // 4. peerConnections에서 해당 피어의 정보를 삭제합니다
+              delete this.peerConnections[key];
+            }
+          }
+        }
+        let video = document.getElementById(`card_${id}_camera`);
+        if (video) {
+          // video.style.backgroundColor = 'white';
+          video.remove();
+        } else {
+          console.error('상대방의 카메라가 없음');
+        }
+        this.showCard(id);
       }
     });
     this.socket.on('screenon', async (id) => {
@@ -341,111 +374,139 @@ export default class SocketManager {
     this.cleanUpConnections();
   }
 
-  async createOffer(targetUserId) {
-    console.log(`Creating offer for user: ${targetUserId}`);
-    const peerConnection = this.createPeerConnection(targetUserId);
+  async createOffer(targetUserId, status) {
+    console.log(`createOffer: ${targetUserId}`);
+    const peerConnection = this.createOfferPeerConnection(targetUserId, status);
     try {
       const offer = await peerConnection.createOffer();
-      console.log(`Created offer for user: ${targetUserId}`);
+      // console.log(`Created offer for user: ${targetUserId}`);
       await peerConnection.setLocalDescription(offer);
-      console.log(`Set local description for user: ${targetUserId}`);
+      // console.log(`Set local description for user: ${targetUserId}`);
       this.socket.emit('offer', {
         sdp: peerConnection.localDescription,
         target: targetUserId,
+        status: status,
       });
     } catch (error) {
       console.error('Error creating offer:', error);
     }
   }
 
-  createPeerConnection(userId) {
+  createOfferPeerConnection(userId, status) {
     console.log(`Creating peer connection for user: ${userId}`);
-    const peerConnection = new RTCPeerConnection();
-    this.peerConnections[userId] = peerConnection;
-    // peerConnection.addTrack(track, null);
-    // let video = document.getElementById(`card_${userId}_camera`);
-    // if (!video) {
-    //   video = document.createElement('video');
-    //   video.id = `card_${userId}_camera`;
-    //   video.autoplay = true;
-    //   video.height = 117;
-    //   video.width = 208;
-    //   video.style.backgroundColor = 'black'; // 원하는 색상으로 변경 가능
-    //   video.style.margin = '4px'; // 원하는 색상으로 변경 가능
-    //   document.getElementById('webrtc-card-container').appendChild(video);
-    // }
+    const peerConnection = new RTCPeerConnection(this.servers);
+    const name = userId + '_' + status + '_res';
+    this.peerConnections[name] = peerConnection;
 
-    if (this.mediaStream) {
+    if (status == 'base') {
+      this.myStream = new MediaStream();
+
+      const oscillator = this.audioContext.createOscillator();
+      const dummyTrack = oscillator
+        .connect(this.audioContext.createMediaStreamDestination())
+        .stream.getAudioTracks()[0];
+      this.myStream.addTrack(dummyTrack);
+
+      if (this.myStream && status == 'base') {
+        this.myStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, this.myStream);
+        });
+        // }
+      }
+    }
+
+    if (this.mediaStream && status == 'media') {
       this.mediaStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, this.mediaStream);
       });
     }
 
-    if (this.screenStream) {
+    if (this.screenStream && status == 'screen') {
       this.screenStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, screenStream);
+        peerConnection.addTrack(track, this.screenStream);
       });
     }
 
-    if (this.audioStream) {
+    if (this.audioStream && status == 'voice') {
       this.audioStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, this.audioStream);
       });
     }
 
     peerConnection.onicecandidate = (event) => {
+      // console.log(`candidate 요청`);
       if (event.candidate) {
-        console.log(`Sending ICE candidate to user: ${userId}`);
+        // console.log(`candidate 받음: ${userId}`);
         this.socket.emit('candidate', {
           candidate: event.candidate,
           target: userId,
+          status: status,
         });
       }
     };
+
     peerConnection.ontrack = (event) => {
       const [stream] = event.streams;
       const streamId = stream.id;
-      console.log('Track event received', userId);
-      // console.log('Track event received', stream);
-      // if (stream.isCamera) {
-      //   console.log('camera');
-      // }
-      // if (stream.isScreen) {
-      //   console.log('screen');
-      // }
-      // if (stream.isAudio) {
-      //   console.log('audio');
-      // }
+      console.log('요청 피어', status, userId);
+    };
 
-      // event.streams.forEach((stream) => {
-      //   stream.getTracks().forEach((track) => {
-      //     stream.addTrack(track);
-      //   });
-      // });
-      let card = document.getElementById(`card_${userId}`);
-      if (!card) {
-        card = document.createElement('img');
-        card.id = `card_${userId}`;
-        card.autoplay = true;
-        card.width = 160;
-        card.height = 120;
-        document.getElementById('webrtc-card-container').appendChild(card);
-        // card.srcObject = stream;
-        card.style.display = 'block';
-        card.style.backgroundColor = 'black';
+    return peerConnection;
+  }
+
+  async createAnswerPeerConnection(userId, status) {
+    // console.log(`Creating peer connection for user: ${userId}`);
+    const peerConnection = new RTCPeerConnection(this.servers);
+    const name = userId + '_' + status;
+    this.peerConnections[name] = peerConnection;
+
+    this.myStream = new MediaStream();
+
+    const oscillator = this.audioContext.createOscillator();
+    const dummyTrack = oscillator
+      .connect(this.audioContext.createMediaStreamDestination())
+      .stream.getAudioTracks()[0];
+    this.myStream.addTrack(dummyTrack);
+
+    if (this.myStream) {
+      this.myStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, this.myStream);
+      });
+    }
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        // console.log(`candidate: ${userId}`);
+        this.socket.emit('candidate', {
+          candidate: event.candidate,
+          target: userId,
+          status: status,
+        });
       }
+    };
 
-      let video = document.getElementById(`card_${userId}_camera`);
-      if (!video) {
-        video = document.createElement('video');
-        video.id = `card_${userId}_camera`;
-        video.autoplay = true;
-        video.width = 160;
-        video.height = 120;
-        document.getElementById('webrtc-card-container').appendChild(video);
+    peerConnection.ontrack = (event) => {
+      const [stream] = event.streams;
+      const streamId = stream.id;
+      console.log('응답 피어', userId);
+
+      if (status == 'media') {
+        let video = document.getElementById(`card_${userId}_camera`);
+        if (!video) {
+          video = document.createElement('video');
+          video.id = `card_${userId}_camera`;
+          video.autoplay = true;
+          video.muted = true;
+          video.width = 160;
+          video.height = 120;
+          document.getElementById('webrtc-card-container').appendChild(video);
+          video.style.backgroundColor = 'black';
+          video.style.opacity = 1;
+        }
         video.srcObject = stream;
-        video.style.display = 'none';
-      } else {
+        // console.log(stream.getVideoTracks());
+      }
+      if (status == 'screen') {
         let screen = document.createElement('video');
         screen.id = `card_${userId}_screen`;
         screen.autoplay = true;
@@ -556,15 +617,26 @@ export default class SocketManager {
 
   async startCamera() {
     try {
-      if (!this.mediaStream) {
-        this.mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        this.myCard.srcObject = this.mediaStream;
+      try {
+        if (!this.mediaStream) {
+          this.mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          this.mediaStream
+            .getVideoTracks()
+            .forEach((track) => (track.enabled = true));
+
+          this.myCard.srcObject = this.mediaStream;
+        }
+      } catch (error) {
+        this.setCameraFunc(false);
+        this.stopCamera();
+        console.error('미디어 장치에 접근할 수 없습니다:', error);
       }
-      this.mediaStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = true));
+
+      this.layerUsers.forEach((user) => {
+        this.createOffer(user.id, 'media');
+      });
 
       this.socket.emit('webRTCStatus', { type: 'camera', status: 'on' });
       // return true;
@@ -578,9 +650,35 @@ export default class SocketManager {
 
   async stopCamera() {
     try {
-      this.mediaStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = false));
+      for (const key in this.peerConnections) {
+        if (this.peerConnections.hasOwnProperty(key)) {
+          // Check if the key includes 'camera' or 'res'
+          if (key.includes('camera') && key.includes('res')) {
+            // Get the peer connection
+            const peerConnection = this.peerConnections[key];
+
+            // Close the peer connection
+            peerConnection.close();
+
+            // Remove the peer connection from the object
+            delete this.peerConnections[key];
+          }
+        }
+      }
+      // Disable all video tracks in mediaStream
+      this.mediaStream.getVideoTracks().forEach((track) => {
+        track.stop(); // Stop the track to release resources
+        // Optionally set the track.enabled to false if you need to disable it, but stopping it is usually sufficient
+      });
+
+      // Remove all tracks from the mediaStream
+      this.mediaStream.getTracks().forEach((track) => {
+        this.mediaStream.removeTrack(track);
+      });
+
+      // Set mediaStream to null
+      this.mediaStream = null;
+
       this.socket.emit('webRTCStatus', { type: 'camera', status: 'off' });
     } catch (err) {
       console.log('stopCamera', err);
@@ -604,13 +702,13 @@ export default class SocketManager {
         .getVideoTracks()
         .forEach((track) => (track.enabled = true));
 
-      Object.keys(this.peerConnections).forEach((peerId) => {
-        // for (const peerId in peers) {
+      // Object.keys(this.peerConnections).forEach((peerId) => {
+      //   // for (const peerId in peers) {
 
-        this.screenStream.getTracks().forEach((track) => {
-          this.peerConnections[peerId].addTrack(track, this.screenStream);
-        });
-      });
+      //   this.screenStream.getTracks().forEach((track) => {
+      //     this.peerConnections[peerId].addTrack(track, this.screenStream);
+      //   });
+      // });
 
       this.socket.emit('webRTCStatus', { type: 'screen', status: 'on' });
       // return true;
@@ -679,6 +777,50 @@ export default class SocketManager {
       this.socket.emit('webRTCStatus', { type: 'voice', status: 'off' });
     } catch (err) {
       console.log('stopVoice', err);
+    }
+  }
+
+  createCard(data) {
+    let card = document.getElementById(`card_${data.id}`);
+    if (!card) {
+      card = document.createElement('Card');
+      card.id = `card_${data.id}`;
+      card.autoplay = true;
+      card.muted = true;
+      card.style.backgroundColor = 'black';
+      card.style.margin = '4px';
+      card.style.width = '160px';
+      card.style.height = '120px';
+      document.getElementById('webrtc-card-container').appendChild(card);
+
+      const text = document.createElement('Card.Text');
+      text.innerText = data.nickName;
+      text.style.color = 'white';
+      text.style.fontSize = '14px';
+      text.style.fontWeight = 'bold';
+      text.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
+      text.style.pointerEvents = 'none';
+      card.appendChild(text);
+    }
+  }
+
+  removeCard(data) {
+    let card = document.getElementById(`card_${data.id}`);
+    if (card) {
+      card.remove();
+    }
+  }
+
+  hideCard(id) {
+    let card = document.getElementById(`card_${id}`);
+    if (card) {
+      card.style.display = 'none';
+    }
+  }
+  showCard(id) {
+    let card = document.getElementById(`card_${id}`);
+    if (card) {
+      card.style.display = 'block';
     }
   }
 }

@@ -119,6 +119,7 @@ export default class Scene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
 
     this.checkLayer();
+    SocketManager.getInstance().joinLayer(0);
   }
 
   update() {
