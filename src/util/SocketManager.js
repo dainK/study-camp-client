@@ -559,6 +559,7 @@ export default class SocketManager {
           video.style.backgroundColor = 'black';
           video.style.opacity = 1;
           video.style.borderRadius = '5px';
+          video.style.margin = '4px';
         }
         video.style.display = 'block';
         video.srcObject = stream;
@@ -578,6 +579,7 @@ export default class SocketManager {
           document.getElementById('webrtc-card-container').appendChild(screen);
           screen.style.backgroundColor = 'black';
           screen.style.opacity = 1;
+          screen.style.margin = '4px';
         }
         screen.style.display = 'block';
         screen.srcObject = stream;
