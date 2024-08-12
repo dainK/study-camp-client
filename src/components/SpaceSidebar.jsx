@@ -36,6 +36,11 @@ const SpaceSidebar = () => {
   };
 
   const handleMicClick = () => {
+    if (!isCamActive) {
+      SocketManager.getInstance().startVoice();
+    } else {
+      SocketManager.getInstance().stopVoice();
+    }
     setIsMicActive(!isMicActive);
   };
 
@@ -172,14 +177,14 @@ const SpaceSidebar = () => {
         </div>
       </div>
       <div className="buttonbox">
-        <button className="sidebar-btn" onClick={handleMicClick}>
-          <span className="material-symbols-outlined">
-            {isMicActive ? 'mic' : 'mic_off'}
-          </span>
-        </button>
         <button className="sidebar-btn" onClick={handleCamClick}>
           <span className="material-symbols-outlined">
             {isCamActive ? 'videocam' : 'videocam_off'}
+          </span>
+        </button>
+        <button className="sidebar-btn" onClick={handleMicClick}>
+          <span className="material-symbols-outlined">
+            {isMicActive ? 'mic' : 'mic_off'}
           </span>
         </button>
         <button className="sidebar-btn" onClick={handleShareClick}>

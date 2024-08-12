@@ -119,7 +119,7 @@ export default class Scene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
 
     this.checkLayer();
-    SocketManager.getInstance().joinLayer(0);
+    SocketManager.getInstance().joinLayer('0');
   }
 
   update() {
@@ -169,7 +169,10 @@ export default class Scene extends Phaser.Scene {
   }
 
   checkLayer() {
-    // console.log(this.map.getLayers());
+    const prevLayer = UserDataManager.getInstance()
+      .getUserData()
+      .layer.toString();
+    let nextLayer = '0';
     this.map.getLayers().forEach((layer) => {
       layer.setAlpha(0.3);
       if (
@@ -180,13 +183,14 @@ export default class Scene extends Phaser.Scene {
         )
       ) {
         layer.setAlpha(1);
-        if (
-          layer.name.toString() !=
-          UserDataManager.getInstance().getUserData().layer.toString()
-        ) {
-          SocketManager.getInstance().joinLayer(layer.name);
+        if (layer.name.toString() != '0') {
+          nextLayer = layer.name.toString();
         }
       }
     });
+    // console.log('joinLayer', prevLayer, nextLayer);
+    if (prevLayer != nextLayer) {
+      SocketManager.getInstance().joinLayer(nextLayer);
+    }
   }
 }

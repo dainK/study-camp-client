@@ -20,6 +20,7 @@ export default class SocketManager {
 
     this.layerUsers = [];
     this.myCard = null;
+    this.myScreen = null;
     this.myStream = null;
     this.mediaStream = null;
     this.screenStream = null;
@@ -70,60 +71,60 @@ export default class SocketManager {
 
     UserDataManager.getInstance().enterSpace(this.socket.id, spaceId);
 
-    this.myCard = document.getElementById('card_my');
+    this.myCard = document.getElementById('card_camera');
     if (!this.myCard) {
       this.myCard = document.createElement('video');
-      this.myCard.id = `card_my`;
+      this.myCard.id = `card_camera`;
       this.myCard.autoplay = true;
       this.myCard.muted = true;
-      this.myCard.width = 160;
-      this.myCard.height = 120;
-      this.myCard.style.backgroundColor = 'white'; // 원하는 색상으로 변경 가능
-      this.myCard.style.margin = '4px'; // 원하는 색상으로 변경 가능
+      this.myCard.style.width = '160px';
+      this.myCard.style.height = '120px';
+      this.myCard.style.backgroundColor = 'black';
+      this.myCard.style.margin = '4px';
+      this.myCard.style.borderRadius = '5px';
       document.getElementById('webrtc-card-container').appendChild(this.myCard);
+
+      this.myCard.style.backgroundImage =
+        'url("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjRDSj%2FbtsI2et2DUp%2FElFau2y51XvmKMqyqG4qi1%2Fimg.png")';
+      this.myCard.style.backgroundSize = 'cover';
+      this.myCard.style.backgroundPosition = 'center';
+
+      // const text = document.createElement('div');
+      // text.innerText = UserDataManager.getInstance().getUserData().nickName;
+      // text.style.color = 'white';
+      // text.style.fontSize = '14px';
+      // text.style.fontWeight = 'bold';
+      // text.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
+      // text.style.pointerEvents = 'none';
+      // this.myCard.appendChild(text);
+    }
+    this.myScreen = document.getElementById('card_screen');
+    if (!this.myScreen) {
+      this.myScreen = document.createElement('video');
+      this.myScreen.id = `card_screen`;
+      this.myScreen.autoplay = true;
+      this.myScreen.muted = true;
+      this.myScreen.style.width = '160px';
+      this.myScreen.style.height = '120px';
+      this.myScreen.style.backgroundColor = 'black';
+      this.myScreen.style.margin = '4px';
+      this.myScreen.style.display = 'none';
+      document
+        .getElementById('webrtc-card-container')
+        .appendChild(this.myScreen);
     }
 
     // 더미 오디오
     this.audioContext = new AudioContext();
 
-    // try {
-    //   if (!this.audioStream) {
-    //     this.audioStream = await await navigator.mediaDevices.getUserMedia({
-    //       audio: true,
-    //     });
-    //     this.audioStream
-    //       .getAudioTracks()
-    //       .forEach((track) => (track.enabled = false));
-    //   }
-    // } catch (error) {
-    //   // console.error('미디어 장치에 접근할 수 없습니다:', error);
-    //   // alert('카메라 또는 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
-    // }
-
-    // try {
-    //   if (!this.screenStream) {
-    //     this.screenStream = await navigator.mediaDevices.getUserMedia({
-    //       audio: true,
-    //       // video: true,
-    //     });
-    //     this.screenStream.isScreen = true;
-    //     this.screenStream
-    //       .getVideoTracks()
-    //       .forEach((track) => (track.enabled = false));
-    //   }
-    // } catch (error) {
-    //   // console.error('미디어 장치에 접근할 수 없습니다:', error);
-    //   // alert('카메라 또는 마이크에 접근할 수 없습니다. 권한을 확인해주세요.');
-    // }
-
     this.socket.on('connect', async (socket) => {
-      console.log('connect');
+      console.log('connect', socket);
     });
 
     this.socket.on('disconnect', async (socket) => {
-      console.log('disconnect');
+      console.log('disconnect', socket);
       // this.publish('disconnect', {id:this.socketID});
-      this.removeCard(data);
+      // this.removeCard(socket.id);
     });
 
     this.socket.on('joinSpace', async (data) => {
@@ -135,26 +136,43 @@ export default class SocketManager {
     });
 
     this.socket.on('leaveSpace', (data) => {
-      // console.log('leaveSpace', data);
-      this.removeCard(data);
-
-      // let video = document.getElementById(`card_${data.id}_camera`);
-      // if (video) {
-      //   video.style.display = 'none';
-      //   video.remove();
-      // }
-      // this.stopStreams();
+      if (data.id != this.socket.id) {
+        this.removeCard(data.id);
+      } else {
+        // 내가 공유 중인거 다 끊기
+        for (const key in this.peerConnections) {
+          if (this.peerConnections.hasOwnProperty(key)) {
+            if (key.includes('res')) {
+              const peerConnection = this.peerConnections[key];
+              peerConnection.close();
+              delete this.peerConnections[key];
+            }
+          }
+        }
+      }
       this.publish('leaveSpace', data);
     });
 
     this.socket.on('joinLayer', async (data) => {
+      this.layerUsers.push(data);
       if (data.id != this.socket.id) {
-        this.layerUsers.push(data);
         console.log('joinLayer', data);
         this.createCard(data);
+
+        // 내가 카메라 공유중일때 들어온사람한테 연결
         if (this.mediaStream) {
-          this.createOffer(data.id, 'media');
-          this.hideCard(data.id);
+          this.createOffer(data.id, 'camera');
+          // this.hideCard(data.id);
+        }
+
+        // 내가 카메라 공유중일때 들어온사람한테 연결
+        if (this.screenStream) {
+          this.createOffer(data.id, 'screen');
+        }
+
+        // 내가 마이크 공유중일때 들어온사람한테 연결
+        if (this.audioStream) {
+          this.createOffer(data.id, 'voice');
         }
       }
       this.publish('joinLayer', data);
@@ -162,19 +180,35 @@ export default class SocketManager {
 
     this.socket.on('layerUsers', async (layerUsers) => {
       console.log('Layer users', layerUsers);
-      this.layerUsers.forEach((data) => {
-        if (data.id != this.socket.id) {
-          this.removeCard(data);
-        }
-      });
-      // this.cleanUpConnections(); // 기존 연결 정리
-      // await this.handleNewLayerUsers(layerUsers);
+
+      // 새로운 멤버카드 생성
       layerUsers.forEach((data) => {
         if (data.id != this.socket.id) {
           this.createCard(data);
         }
       });
       this.layerUsers = layerUsers;
+
+      // 내가 카메라 공유중일때 새로운애들 연결
+      if (this.mediaStream) {
+        this.layerUsers.forEach((user) => {
+          if (user.id != this.socket.id) this.createOffer(user.id, 'camera');
+        });
+      }
+
+      // 내가 화면 공유중일때 새로운애들 연결
+      if (this.screenStream) {
+        this.layerUsers.forEach((user) => {
+          if (user.id != this.socket.id) this.createOffer(user.id, 'screen');
+        });
+      }
+
+      // 내가 마이크 공유중일때 새로운애들 연결
+      if (this.audioStream) {
+        this.layerUsers.forEach((user) => {
+          if (user.id != this.socket.id) this.createOffer(user.id, 'voice');
+        });
+      }
 
       this.publish('layerUsers', layerUsers);
     });
@@ -183,13 +217,30 @@ export default class SocketManager {
       console.log('Left layer', data);
       this.layerUsers = this.layerUsers.filter((user) => user.id !== data.id);
 
-      // if (data.id != this.socket.id) {
-      //   let video = document.getElementById(`card_${data.id}_camera`);
-      //   if (video) {
-      //     video.style.display = 'none';
-      //   }
-      // }
-      this.removeCard(data);
+      // 남이 나갈 때
+      if (data.id != this.socket.id) {
+        this.removeCard(data.id);
+      } else {
+        // 내가 나갈 때
+
+        // 있던 애들 카드들 삭제
+        this.layerUsers.forEach((data) => {
+          if (data.id != this.socket.id) {
+            this.removeCard(data.id);
+          }
+        });
+
+        // 내가 공유 중인거 다 끊기
+        for (const key in this.peerConnections) {
+          if (this.peerConnections.hasOwnProperty(key)) {
+            if (key.includes('res')) {
+              const peerConnection = this.peerConnections[key];
+              peerConnection.close();
+              delete this.peerConnections[key];
+            }
+          }
+        }
+      }
 
       this.publish('leaveLayer', data);
     });
@@ -221,9 +272,8 @@ export default class SocketManager {
       // await this.handleOffer(offer, socketId);
       // console.log(`Received offer from user: ${data.sender}`);
       if (data.sender !== this.socket.id) {
-        const name = data.sender + '_' + data.status;
         // console.log(`offer`);
-        if (!this.peerConnections[name]) {
+        if (!this.peerConnections[`${data.sender}_${data.status}`]) {
           console.log(`createAnswer`);
           const peerConnection = await this.createAnswerPeerConnection(
             data.sender,
@@ -251,13 +301,15 @@ export default class SocketManager {
       // const { answer, socketId } = data;
       // await this.handleAnswer(answer, socketId);
       // console.log(`Received answer from user: ${data.sender}`);
-      const name = data.sender + '_' + data.status + '_res';
       console.log('answer');
-      if (data.sender !== this.socket.id && this.peerConnections[name]) {
+      if (
+        data.sender !== this.socket.id &&
+        this.peerConnections[`${data.sender}_${data.status}_res`]
+      ) {
         try {
-          await this.peerConnections[name].setRemoteDescription(
-            new RTCSessionDescription(data.sdp),
-          );
+          await this.peerConnections[
+            `${data.sender}_${data.status}_res`
+          ].setRemoteDescription(new RTCSessionDescription(data.sdp));
         } catch (error) {
           console.error('Error handling answer:', error);
         }
@@ -289,36 +341,14 @@ export default class SocketManager {
     });
     this.socket.on('cameraoff', async (id) => {
       if (id != this.socket.id) {
-        for (const key in this.peerConnections) {
-          if (this.peerConnections.hasOwnProperty(key)) {
-            // Check if the key includes 'camera' or 'res'
-            if (key.includes('camera') && key.includes(`${id}`)) {
-              // Get the peer connection
-              const peerConnection = this.peerConnections[key];
-              // 1. 모든 트랙을 중지하고 제거합니다
-              peerConnection.getReceivers().forEach((receiver) => {
-                const track = receiver.track;
-                if (track) {
-                  track.stop();
-                }
-              });
-
-              // 2. 연결된 스트림을 제거합니다
-              peerConnection.getTransceivers().forEach((transceiver) => {
-                transceiver.sender.replaceTrack(null);
-              });
-
-              // 3. 연결을 종료합니다
-              peerConnection.close();
-
-              // 4. peerConnections에서 해당 피어의 정보를 삭제합니다
-              delete this.peerConnections[key];
-            }
-          }
+        const peerConnection = this.peerConnections[`${id}_camera`];
+        if (peerConnection) {
+          peerConnection.close();
+          delete this.peerConnections[`${id}_camera`];
         }
+
         let video = document.getElementById(`card_${id}_camera`);
         if (video) {
-          // video.style.backgroundColor = 'white';
           video.remove();
         } else {
           console.error('상대방의 카메라가 없음');
@@ -328,23 +358,46 @@ export default class SocketManager {
     });
     this.socket.on('screenon', async (id) => {
       if (id != this.socket.id) {
-        const screen = document.getElementById(`card_${id}_screen`);
-        if (screen) {
-          screen.style.display = 'block';
-        }
+        // this.hideCard(id);
+      } else {
       }
+      // if (id != this.socket.id) {
+      //   const screen = document.getElementById(`card_${id}_screen`);
+      //   if (screen) {
+      //     screen.style.display = 'block';
+      //   }
+      // }
     });
     this.socket.on('screenoff', async (id) => {
-      const screen = document.getElementById(`card_${id}_screen`);
-      if (screen) {
-        screen.style.display = 'none';
+      if (id != this.socket.id) {
+        const peerConnection = this.peerConnections[`${id}_screen`];
+        if (peerConnection) {
+          peerConnection.close();
+          delete this.peerConnections[`${id}_screen`];
+        }
+
+        let screen = document.getElementById(`card_${id}_screen`);
+        if (screen) {
+          screen.remove();
+        } else {
+          console.error('상대방의 카메라가 없음');
+        }
+        // this.showCard(id);
       }
     });
     this.socket.on('voiceon', async (id) => {
       if (id != this.socket.id) {
       }
     });
-    this.socket.on('voiceoff', async (id) => {});
+    this.socket.on('voiceoff', async (id) => {
+      if (id != this.socket.id) {
+        const peerConnection = this.peerConnections[`${id}_voice`];
+        if (peerConnection) {
+          peerConnection.close();
+          delete this.peerConnections[`${id}_voice`];
+        }
+      }
+    });
   }
 
   disconnect() {
@@ -395,27 +448,23 @@ export default class SocketManager {
   createOfferPeerConnection(userId, status) {
     console.log(`Creating peer connection for user: ${userId}`);
     const peerConnection = new RTCPeerConnection(this.servers);
-    const name = userId + '_' + status + '_res';
-    this.peerConnections[name] = peerConnection;
+    this.peerConnections[`${userId}_${status}_res`] = peerConnection;
 
     if (status == 'base') {
       this.myStream = new MediaStream();
-
       const oscillator = this.audioContext.createOscillator();
       const dummyTrack = oscillator
         .connect(this.audioContext.createMediaStreamDestination())
         .stream.getAudioTracks()[0];
       this.myStream.addTrack(dummyTrack);
-
       if (this.myStream && status == 'base') {
         this.myStream.getTracks().forEach((track) => {
           peerConnection.addTrack(track, this.myStream);
         });
-        // }
       }
     }
 
-    if (this.mediaStream && status == 'media') {
+    if (this.mediaStream && status == 'camera') {
       this.mediaStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, this.mediaStream);
       });
@@ -457,8 +506,7 @@ export default class SocketManager {
   async createAnswerPeerConnection(userId, status) {
     // console.log(`Creating peer connection for user: ${userId}`);
     const peerConnection = new RTCPeerConnection(this.servers);
-    const name = userId + '_' + status;
-    this.peerConnections[name] = peerConnection;
+    this.peerConnections[`${userId}_${status}`] = peerConnection;
 
     this.myStream = new MediaStream();
 
@@ -490,7 +538,7 @@ export default class SocketManager {
       const streamId = stream.id;
       console.log('응답 피어', userId);
 
-      if (status == 'media') {
+      if (status == 'camera') {
         let video = document.getElementById(`card_${userId}_camera`);
         if (!video) {
           video = document.createElement('video');
@@ -502,17 +550,28 @@ export default class SocketManager {
           document.getElementById('webrtc-card-container').appendChild(video);
           video.style.backgroundColor = 'black';
           video.style.opacity = 1;
+          video.style.borderRadius = '5px';
         }
+        video.style.display = 'block';
         video.srcObject = stream;
-        // console.log(stream.getVideoTracks());
+        this.hideCard(userId);
       }
+
       if (status == 'screen') {
-        let screen = document.createElement('video');
-        screen.id = `card_${userId}_screen`;
-        screen.autoplay = true;
-        video.width = 160;
-        video.height = 120;
-        document.getElementById('webrtc-card-container').appendChild(video);
+        let screen = document.getElementById(`card_${userId}_screen`);
+        if (!screen) {
+          screen = document.createElement('video');
+          screen.id = `card_${userId}_screen`;
+          screen.autoplay = true;
+          screen.muted = true;
+          screen.width = 160;
+          screen.height = 120;
+          screen.style.borderRadius = '5px';
+          document.getElementById('webrtc-card-container').appendChild(screen);
+          screen.style.backgroundColor = 'black';
+          screen.style.opacity = 1;
+        }
+        screen.style.display = 'block';
         screen.srcObject = stream;
       }
     };
@@ -569,16 +628,6 @@ export default class SocketManager {
   }
 
   joinLayer(layer) {
-    const container = document.getElementById('webrtc-card-container');
-    // 컨테이너의 모든 자식 요소를 가져오기
-    const children = container.children;
-    // 각 자식 요소의 display 속성을 'none'으로 설정
-    Array.from(children).forEach((child) => {
-      child.style.display = 'none';
-    });
-
-    this.myCard.style.display = 'block';
-
     UserDataManager.getInstance().setLayer(layer);
     this.socket.emit('joinLayer', UserDataManager.getInstance().getUserData());
   }
@@ -627,15 +676,18 @@ export default class SocketManager {
             .forEach((track) => (track.enabled = true));
 
           this.myCard.srcObject = this.mediaStream;
+          this.myCard.play();
         }
       } catch (error) {
+        alert('미디어 장치에 접근할 수 없습니다');
         this.setCameraFunc(false);
         this.stopCamera();
-        console.error('미디어 장치에 접근할 수 없습니다:', error);
+        // console.error('미디어 장치에 접근할 수 없습니다:', error);
+        throw '미디어 장치에 접근할 수 없습니다';
       }
 
       this.layerUsers.forEach((user) => {
-        this.createOffer(user.id, 'media');
+        if (user.id != this.socket.id) this.createOffer(user.id, 'camera');
       });
 
       this.socket.emit('webRTCStatus', { type: 'camera', status: 'on' });
@@ -650,33 +702,23 @@ export default class SocketManager {
 
   async stopCamera() {
     try {
+      this.myCard.srcObject = null;
+      this.myCard.pause();
       for (const key in this.peerConnections) {
         if (this.peerConnections.hasOwnProperty(key)) {
-          // Check if the key includes 'camera' or 'res'
           if (key.includes('camera') && key.includes('res')) {
-            // Get the peer connection
             const peerConnection = this.peerConnections[key];
-
-            // Close the peer connection
             peerConnection.close();
-
-            // Remove the peer connection from the object
             delete this.peerConnections[key];
           }
         }
       }
-      // Disable all video tracks in mediaStream
       this.mediaStream.getVideoTracks().forEach((track) => {
-        track.stop(); // Stop the track to release resources
-        // Optionally set the track.enabled to false if you need to disable it, but stopping it is usually sufficient
+        track.stop();
       });
-
-      // Remove all tracks from the mediaStream
       this.mediaStream.getTracks().forEach((track) => {
         this.mediaStream.removeTrack(track);
       });
-
-      // Set mediaStream to null
       this.mediaStream = null;
 
       this.socket.emit('webRTCStatus', { type: 'camera', status: 'off' });
@@ -691,58 +733,55 @@ export default class SocketManager {
         this.screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
         });
+
+        this.screenStream
+          .getVideoTracks()
+          .forEach((track) => (track.enabled = true));
+
         this.screenStream.getVideoTracks()[0].onended = () => {
           // 화면 공유가 중지된 경우의 처리 로직
           this.setScreenFunc(false);
-          this.stopScreenshare();
+          this.stopScreenShare();
+          throw ' 화면 공유 중지';
         };
       }
+      this.myScreen.srcObject = this.screenStream;
+      this.myScreen.style.display = 'block';
 
-      this.screenStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = true));
-
-      // Object.keys(this.peerConnections).forEach((peerId) => {
-      //   // for (const peerId in peers) {
-
-      //   this.screenStream.getTracks().forEach((track) => {
-      //     this.peerConnections[peerId].addTrack(track, this.screenStream);
-      //   });
-      // });
+      this.layerUsers.forEach((user) => {
+        if (user.id != this.socket.id) this.createOffer(user.id, 'screen');
+      });
 
       this.socket.emit('webRTCStatus', { type: 'screen', status: 'on' });
-      // return true;
     } catch (err) {
       console.log('startScreenShare', err);
-      // return false;
       // 화면 공유가 취소되었을 때의 처리 로직
       this.setScreenFunc(false);
-      this.stopScreenshare();
+      this.stopScreenShare();
     }
   }
 
-  async stopScreenshare() {
+  async stopScreenShare() {
     try {
-      // this.mediaStream = await navigator.mediaDevices.getUserMedia({
-      //   video: true,
-      // });
-      if (this.screenStream) {
-        this.screenStream
-          .getVideoTracks()
-          .forEach((track) => (track.enabled = false));
-
-        // Object.keys(this.peerConnections).forEach((peerId) => {
-        //   // for (const peerId in peers) {
-        //   this.mediaStream.getTracks().forEach((track) => {
-        //     // peers[peerId].addTrack(track, this.mediaStream);
-        //     this.peerConnections[peerId].getSenders().forEach((sender) => {
-        //       if (sender.track === track) {
-        //         this.peerConnections[peerId].removeTrack(sender);
-        //       }
-        //     });
-        //   });
-        // });
+      for (const key in this.peerConnections) {
+        if (this.peerConnections.hasOwnProperty(key)) {
+          if (key.includes('screen') && key.includes('res')) {
+            const peerConnection = this.peerConnections[key];
+            peerConnection.close();
+            delete this.peerConnections[key];
+          }
+        }
       }
+      this.screenStream.getVideoTracks().forEach((track) => {
+        track.stop();
+      });
+      this.screenStream.getTracks().forEach((track) => {
+        this.screenStream.removeTrack(track);
+      });
+      this.screenStream = null;
+
+      this.myScreen.style.display = 'none';
+
       this.socket.emit('webRTCStatus', { type: 'screen', status: 'off' });
     } catch (err) {
       console.log('stopScreenshare', err);
@@ -751,17 +790,28 @@ export default class SocketManager {
 
   async startVoice() {
     try {
-      if (!this.audioStream) {
-        this.audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        this.myCard.srcObject = this.audioStream;
+      try {
+        if (!this.audioStream) {
+          this.audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          this.audioStream
+            .getAudioTracks()
+            .forEach((track) => (track.enabled = true));
+        }
+      } catch (error) {
+        alert('마이크 장치에 접근할 수 없습니다');
+        this.setVoiceFunc(false);
+        this.stopVoice();
+        throw '오디오 장치에 접근할 수 없습니다';
       }
-      this.audioStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = true));
+
+      this.layerUsers.forEach((user) => {
+        if (user.id != this.socket.id) this.createOffer(user.id, 'voice');
+      });
 
       this.socket.emit('webRTCStatus', { type: 'voice', status: 'on' });
+      // return true;
     } catch (err) {
       console.error('startVoice', err);
       this.setVoiceFunc(false);
@@ -771,9 +821,23 @@ export default class SocketManager {
 
   async stopVoice() {
     try {
-      this.audioStream
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = false));
+      for (const key in this.peerConnections) {
+        if (this.peerConnections.hasOwnProperty(key)) {
+          if (key.includes('voice') && key.includes('res')) {
+            const peerConnection = this.peerConnections[key];
+            peerConnection.close();
+            delete this.peerConnections[key];
+          }
+        }
+      }
+      this.audioStream.getVideoTracks().forEach((track) => {
+        track.stop();
+      });
+      this.audioStream.getTracks().forEach((track) => {
+        this.audioStream.removeTrack(track);
+      });
+      this.audioStream = null;
+
       this.socket.emit('webRTCStatus', { type: 'voice', status: 'off' });
     } catch (err) {
       console.log('stopVoice', err);
@@ -791,6 +855,12 @@ export default class SocketManager {
       card.style.margin = '4px';
       card.style.width = '160px';
       card.style.height = '120px';
+      card.style.borderRadius = '5px';
+
+      card.style.backgroundImage =
+        'url("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjRDSj%2FbtsI2et2DUp%2FElFau2y51XvmKMqyqG4qi1%2Fimg.png")';
+      card.style.backgroundSize = 'cover';
+      card.style.backgroundPosition = 'center';
       document.getElementById('webrtc-card-container').appendChild(card);
 
       const text = document.createElement('Card.Text');
@@ -802,12 +872,42 @@ export default class SocketManager {
       text.style.pointerEvents = 'none';
       card.appendChild(text);
     }
+    card.style.display = 'block';
   }
 
-  removeCard(data) {
-    let card = document.getElementById(`card_${data.id}`);
+  removeCard(id) {
+    let card = document.getElementById(`card_${id}`);
     if (card) {
       card.remove();
+    }
+
+    // 나가는 애 카메라 연결 해제, 카드 삭제
+    const cameraPeerConnection = this.peerConnections[`${id}_camera`];
+    if (cameraPeerConnection) {
+      cameraPeerConnection.close();
+      delete this.peerConnections[`${id}_camera`];
+    }
+    let video = document.getElementById(`card_${id}_camera`);
+    if (video) {
+      video.remove();
+    }
+
+    // 나가는 애 화면 연결 해제, 카드 삭제
+    const screenPeerConnection = this.peerConnections[`${id}_screen`];
+    if (screenPeerConnection) {
+      screenPeerConnection.close();
+      delete this.peerConnections[`${id}_screen`];
+    }
+    let screen = document.getElementById(`card_${id}_screen`);
+    if (screen) {
+      screen.remove();
+    }
+
+    // 나가는 애 마이크 연결 해제
+    const voicePeerConnection = this.peerConnections[`${id}_voice`];
+    if (voicePeerConnection) {
+      voicePeerConnection.close();
+      delete this.peerConnections[`${id}_voice`];
     }
   }
 
