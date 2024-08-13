@@ -192,6 +192,7 @@
   width: 100%;
   display: flex;
   border-top: 1px solid #ccc;
+  white-space: pre-wrap;
 }
 
 .sidebar-container-chat .input-container input {

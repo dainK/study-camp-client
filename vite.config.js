@@ -49,6 +49,7 @@ export default ({ mode }) => {
     },
     define: {
       'process.env.VITE_PORT': JSON.stringify(env.VITE_PORT),
+      'process.env.VITE_CLIENT_URL': JSON.stringify(env.VITE_CLIENT_URL),
       'process.env.VITE_SERVER_URL': JSON.stringify(env.VITE_SERVER_URL),
     },
     server: {

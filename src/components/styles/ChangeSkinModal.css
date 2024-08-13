@@ -1,0 +1,158 @@
+.change-modal {
+  width: 300px;
+  display: block;
+}
+
+.change-modal-header {
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.change-modal-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.change-modal-tab-container {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+}
+
+.change-modal-tab {
+  /* color: #495057;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 10px 15px;
+  cursor: pointer; */
+  color: #495057; /* 텍스트 색상 */
+  font-weight: 500; /* 글씨 두께 */
+  text-decoration: none; /* 텍스트 장식 없음 */
+  padding: 10px 15px; /* 여백 */
+  cursor: pointer; /* 커서 모양 */
+  border: none; /* 테두리 없음 */
+  outline: none; /* 클릭 시 외곽선 없음 */
+  background: transparent; /* 배경 투명 */
+}
+
+.change-modal-tab.active {
+  background-color: transparent;
+  background: transparent;
+  color: #495057;
+  font-weight: bold;
+}
+.change-modal-tab:hover {
+  background-color: transparent;
+  background: transparent;
+  color: #495057;
+}
+.change-modal-tab:focus {
+  background-color: transparent;
+  background: transparent;
+  font-weight: bold;
+}
+
+.change-modal-content-container {
+  width: 100%;
+  /* height: 50%; */
+  /* max-height: 300px; */
+  height: 300px;
+  background-color: white;
+  margin-bottom: 20px;
+  overflow: auto;
+}
+
+/* 스크롤바 */
+.change-modal-content-container::-webkit-scrollbar {
+  width: 8px; /* 스크롤바의 전체 너비 */
+}
+
+/* 스크롤바 트랙 (스크롤바 배경) */
+.change-modal-content-container::-webkit-scrollbar-track {
+  background: #003cff00; /* 트랙 배경색 */
+  border-radius: 10px;
+}
+
+/* 스크롤바 핸들 (드래그할 수 있는 부분) */
+.change-modal-content-container::-webkit-scrollbar-thumb {
+  background: #2265998e; /* 핸들의 배경 색상 */
+  border-radius: 4px; /* 핸들의 모서리 둥글기 */
+  background: #0056b3;
+}
+
+/* 핸들 호버 상태 */
+.change-modal-content-container::-webkit-scrollbar-thumb:hover {
+  background: #226699; /* 핸들의 배경 색상이 변경됨 */
+  /* background: #0056b3; */
+}
+
+.change-modal-color-selector {
+  display: flex;
+}
+
+.change-modal-color-option {
+  flex: 1;
+  padding: 4px;
+  text-align: center;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.change-modal-option-container {
+  background-color: #a2cfff;
+  display: flex;
+  padding: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  overflow-y: auto;
+  border-radius: 10px;
+  height: 200px;
+}
+
+.change-modal-option-item {
+  background-color: white;
+  width: 48px;
+  height: 64px;
+  margin: 4px;
+  /* overflow: hidden; */
+  /* position: relative; */
+  /* display: inline-block; */
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.change-modal-option-box {
+  background-color: white;
+  width: 48px;
+  height: 64px;
+  margin: 4px;
+  /* overflow: hidden; */
+  /* position: relative; */
+  /* display: inline-block; */
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.change-modal-save-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.change-modal-save-button:hover {
+  background-color: #0056b3;
+}

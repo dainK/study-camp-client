@@ -13,7 +13,6 @@ export default class Player {
     //   UserDataManager.getInstance().setUserNickName(data.nickName);
     // }
     this.nickName = data.nickName;
-    // this.memberId = data.memberId;
     console.log(data);
 
     this.m_cursorKeys = this.scene.input.keyboard.createCursorKeys();
@@ -345,10 +344,10 @@ export default class Player {
   }
 
   playAnimation(playdata) {
-    this.skinSprite.play(this.data.memberId + '_' + playdata + '_skin');
-    this.hairSprite.play(this.data.memberId + '_' + playdata + '_hair');
-    this.clothesSprite.play(this.data.memberId + '_' + playdata + '_clothes');
-    this.faceSprite.play(this.data.memberId + '_' + playdata + '_face');
+    this.skinSprite.play(this.data.id + '_' + playdata + '_skin');
+    this.hairSprite.play(this.data.id + '_' + playdata + '_hair');
+    this.clothesSprite.play(this.data.id + '_' + playdata + '_clothes');
+    this.faceSprite.play(this.data.id + '_' + playdata + '_face');
   }
 
   createAnimation(playdata, framedata, repeatdata) {
@@ -359,45 +358,45 @@ export default class Player {
       'clothes-' + (this.data.clothes * 12 + this.data.clothes_color + 1);
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_skin',
+      key: this.data.id + '_' + playdata + '_skin',
       frames: this.scene.anims.generateFrameNumbers(skin, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_face',
+      key: this.data.id + '_' + playdata + '_face',
       frames: this.scene.anims.generateFrameNumbers(face, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_clothes',
+      key: this.data.id + '_' + playdata + '_clothes',
       frames: this.scene.anims.generateFrameNumbers(hair, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
 
     this.scene.anims.create({
-      key: this.data.memberId + '_' + playdata + '_hair',
+      key: this.data.id + '_' + playdata + '_hair',
       frames: this.scene.anims.generateFrameNumbers(clothes, framedata),
       frameRate: 12,
       repeat: repeatdata,
     });
   }
   removeAnimation(ani) {
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_skin')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_skin');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_skin')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_skin');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_face')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_face');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_face')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_face');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_clothes')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_clothes');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_clothes')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_clothes');
     }
-    if (this.scene.anims.exists(this.data.memberId + '_' + ani + '_hair')) {
-      this.scene.anims.remove(this.data.memberId + '_' + ani + '_hair');
+    if (this.scene.anims.exists(this.data.id + '_' + ani + '_hair')) {
+      this.scene.anims.remove(this.data.id + '_' + ani + '_hair');
     }
   }
 

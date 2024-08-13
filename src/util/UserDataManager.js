@@ -16,7 +16,7 @@ export default class UserDataManager {
       y: 1,
       skin: Math.floor(Math.random() * 13),
       face: Math.floor(Math.random() * 65),
-      hair: Math.floor(Math.random() * 10),
+      hair: Math.floor(Math.random() * 9),
       hair_color: Math.floor(Math.random() * 12),
       clothes: Math.floor(Math.random() * 7),
       clothes_color: Math.floor(Math.random() * 12),

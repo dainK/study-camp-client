@@ -3,6 +3,8 @@ import './styles/SpaceSidebar.css';
 import { Link } from 'react-router-dom';
 import SocketManager from '../util/SocketManager';
 import UserDataManager from '../util/UserDataManager';
+import ChangeSkinModal from './modal/ChangeSkinModal';
+import ChangeNickModal from './modal/ChangeNickModal';
 
 const SpaceSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +12,9 @@ const SpaceSidebar = () => {
   const [isCamActive, setIsCamActive] = useState(false);
   const [isShareActive, setIsShareActive] = useState(false);
   const [inButton, setInButton] = useState('home');
+
+  const [isSkinModalOpen, setIsSkinModalOpen] = useState(false);
+  const [isNickModalOpen, setIsNickModalOpen] = useState(false);
 
   useEffect(() => {
     SocketManager.getInstance().setMessagCallback(
@@ -22,14 +27,27 @@ const SpaceSidebar = () => {
       setIsMicActive,
     );
 
+    const handleScroll = () => {
+      checkScrollBottom();
+    };
+
     // 클릭 이벤트 리스너 추가
     document.addEventListener('click', handleClickOutside);
+
+    // 채팅 컨테이너의 스크롤 이벤트 리스너 추가
+    const chatContainers = document.querySelectorAll('.messages');
+    chatContainers.forEach((container) =>
+      container.addEventListener('scroll', handleScroll),
+    );
 
     // 컴포넌트가 언마운트 될 때 소켓 연결 종료 및 이벤트 리스너 제거
     return () => {
       document.removeEventListener('click', handleClickOutside);
+      chatContainers.forEach((container) =>
+        container.removeEventListener('scroll', handleScroll),
+      );
     };
-  }, []);
+  }, []); // 빈 배열로 설정하여 컴포넌트가 마운트될 때만 실행
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -77,6 +95,23 @@ const SpaceSidebar = () => {
   const handleChangeOnline = () => {
     setInButton('online');
   };
+
+  const handleOpenSkinModal = () => {
+    setIsSkinModalOpen(true);
+  };
+
+  const handleCloseSkinModal = () => {
+    setIsSkinModalOpen(false);
+  };
+
+  const handleOpenNickModal = () => {
+    setIsNickModalOpen(true);
+  };
+
+  const handleCloseNickModal = () => {
+    setIsNickModalOpen(false);
+  };
+
   // 상태 추가: 카드 목록
   const [cards, setCards] = useState([]);
   // 카드 추가 함수
@@ -90,13 +125,22 @@ const SpaceSidebar = () => {
   };
 
   // const { messages, addMessage } = useState([]);
-  const [sapceMessages, setSpaceMessages] = useState([]);
+  const [spaceMessages, setSpaceMessages] = useState([]);
   const [spaceMessageInput, setSpaceMessageInput] = useState('');
   const spaceMessageInputRef = useRef(null); // 입력 필드에 대한 참조 생성
 
   const [roomMessages, setRoomMessages] = useState([]);
   const [roomMessageInput, setRoomMessageInput] = useState('');
   const roomMessageInputRef = useRef(null); // 입력 필드에 대한 참조 생성
+
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (isAtBottom && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [spaceMessages, roomMessages, isAtBottom]); // spaceMessages, roomMessages, isAtBottom이 변경될 때마다 스크롤 조정
 
   const addListener = () => {
     UserDataManager.getInstance().setStateChat(true);
@@ -162,6 +206,23 @@ const SpaceSidebar = () => {
     setRoomMessages((prevMessages) => [...prevMessages, message]);
   };
 
+  const checkScrollBottom = () => {
+    const container = document.querySelector('.messages');
+    if (container) {
+      setIsAtBottom(
+        container.scrollHeight - container.scrollTop === container.clientHeight,
+      );
+    }
+  };
+
+  const handleSpaceChatScroll = () => {
+    checkScrollBottom();
+  };
+
+  const handleRoomChatScroll = () => {
+    checkScrollBottom();
+  };
+
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="webrtc-container">
@@ -220,12 +281,15 @@ const SpaceSidebar = () => {
           <Link to="/" className="image-wrapper">
             <img src="/title.png" className="responsive-image" />
           </Link>
-
           <h3>스페이스이름</h3>
           <div className="btn">초대코드</div>
           <h3>닉네임</h3>
-          <div className="btn">닉네임 변경</div>
-          <div className="btn">캐릭터 꾸미기</div>
+          <div className="btn" onClick={handleOpenNickModal}>
+            닉네임 변경
+          </div>
+          <div className="btn" onClick={handleOpenSkinModal}>
+            캐릭터 꾸미기
+          </div>
         </div>
       )}
 
@@ -233,21 +297,22 @@ const SpaceSidebar = () => {
         <div className="sidebar-container-chat">
           <h3>전체 채팅</h3>
           <div className="chatroom-container">
-            <div className="messages">
-              {sapceMessages.map((msg, index) => (
+            <div className="messages" onScroll={handleSpaceChatScroll}>
+              {spaceMessages.map((msg, index) => (
                 <div key={index} className="message">
                   <strong style={{ color: '#226699' }}>{msg.nickName}</strong>
                   <br />
                   {msg.message}
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
             <div className="input-container">
               <input
                 type="text"
                 value={spaceMessageInput}
                 onChange={(e) => setSpaceMessageInput(e.target.value)}
-                onKeyDown={handleKeyDown} // Enter 키 이벤트 핸들러 추가
+                onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
                 ref={spaceMessageInputRef}
                 onFocus={addListener}
@@ -259,11 +324,11 @@ const SpaceSidebar = () => {
         </div>
       )}
 
-      {inButton == 'room' && (
+      {inButton === 'room' && (
         <div className="sidebar-container-chat">
           <h3>구역 채팅</h3>
           <div className="chatroom-container">
-            <div className="messages">
+            <div className="messages" onScroll={handleRoomChatScroll}>
               {roomMessages.map((msg, index) => (
                 <div key={index} className="message">
                   <strong style={{ color: '#226699' }}>{msg.nickName}</strong>
@@ -271,23 +336,33 @@ const SpaceSidebar = () => {
                   {msg.message}
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
             <div className="input-container">
               <input
                 type="text"
                 value={roomMessageInput}
                 onChange={(e) => setRoomMessageInput(e.target.value)}
-                onKeyDown={handleKeyDown} // Enter 키 이벤트 핸들러 추가
+                onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
                 ref={roomMessageInputRef}
                 onFocus={addListener}
                 onBlur={removeListener}
               />
-              <button onClick={handleSendSpaceMessage}>Send</button>
+              <button onClick={handleSendRoomMessage}>Send</button>
             </div>
           </div>
         </div>
       )}
+
+      <ChangeNickModal
+        isOpen={isNickModalOpen}
+        onClose={handleCloseNickModal}
+      />
+      <ChangeSkinModal
+        isOpen={isSkinModalOpen}
+        onClose={handleCloseSkinModal}
+      />
     </div>
   );
 };

@@ -1,31 +1,12 @@
 import Phaser from 'phaser';
 // resource
-// import fontPng from './assets/font/font.png';
-// import fontXml from './assets/font/font.xml';
-import tiles from './assets/images/tiles.png';
-import table from './assets/images/table.png';
-// class
 import Map from './Map.js';
 import MapData from './defines/MapData.js';
-// import PlayerData from './defines/PlayerData.js';
 import Player from './Player.js';
 import OtherPlayer from './OtherPlayer.js';
 
 import SocketManager from '../util/SocketManager.js';
 import UserDataManager from '../util/UserDataManager.js';
-
-const skinFiles = import.meta.glob('./assets/sprites/skin/*.png', {
-  eager: false,
-});
-const hairFiles = import.meta.glob('./assets/sprites/hair/*.png', {
-  eager: false,
-});
-const clothesFiles = import.meta.glob('./assets/sprites/clothes/*.png', {
-  eager: false,
-});
-const faceFiles = import.meta.glob('./assets/sprites/face/*.png', {
-  eager: false,
-});
 
 export default class Scene extends Phaser.Scene {
   constructor() {
@@ -47,38 +28,14 @@ export default class Scene extends Phaser.Scene {
     });
 
     // IMAGES
-    this.load.image('tiles', tiles);
-    this.load.image('table', table);
-
-    const scene = this;
-    // 프로미스를 사용하여 각 파일 세트를 처리하는 함수
-    async function loadSpritesheet(fileSet, prefix) {
-      const promises = Object.values(fileSet).map((getFile, index) => {
-        return getFile().then((module) => {
-          scene.load.spritesheet(prefix + (index + 1), module.default, {
-            frameWidth: 48,
-            frameHeight: 64,
-          });
-        });
-      });
-
-      // 모든 프로미스가 완료될 때까지 기다림
-      await Promise.all(promises);
-    }
-
-    // 각 세트를 순차적으로 로드
-    async function loadAll() {
-      await loadSpritesheet(skinFiles, 'skin-');
-      await loadSpritesheet(hairFiles, 'hair-');
-      await loadSpritesheet(clothesFiles, 'clothes-');
-      await loadSpritesheet(faceFiles, 'face-');
-    }
-
-    // loadAll 함수를 호출하여 모든 스프라이트 시트 로딩 시작
-    await loadAll();
-    console.log('모든 스프라이트 시트 로딩 완료');
-    // 이 시점에서 모든 자산 로딩이 완료되었습니다
-    // 로딩이 완료된 후의 처리가 필요하면 여기에 작성합니다
+    this.load.image(
+      'tiles',
+      `${process.env.VITE_CLIENT_URL}/assets/images/tiles.png`,
+    );
+    this.load.image(
+      'table',
+      `${process.env.VITE_CLIENT_URL}/assets/images/table.png`,
+    );
   }
 
   create() {
@@ -111,15 +68,70 @@ export default class Scene extends Phaser.Scene {
       this.cameras.main.zoom = Phaser.Math.Clamp(newZoom, maxZoom, 2);
     });
 
-    this.player = new Player(this, UserDataManager.getInstance().getUserData());
-    this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
-    this.cameras.main.setBounds(0, 0, bgWidth, bgHeight);
-    this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
-    // 플레이어에 물리 엔진 활성화
-    this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
+    this.loadPlayerSkin(UserDataManager.getInstance().getUserData())
+      .then(() => {
+        const bgWidth = MapData.tileSize * MapData.column;
+        const bgHeight = MapData.tileSize * MapData.row;
+        this.player = new Player(
+          this,
+          UserDataManager.getInstance().getUserData(),
+        );
+        this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
+        this.cameras.main.setBounds(0, 0, bgWidth, bgHeight);
+        this.cameras.main.startFollow(this.player.getSprite(), false, 0.5, 0.5);
+        // 플레이어에 물리 엔진 활성화
+        this.physics.world.setBounds(0, 0, bgWidth, bgHeight);
 
-    this.checkLayer();
-    SocketManager.getInstance().joinLayer('0');
+        this.checkLayer();
+        SocketManager.getInstance().joinLayer('0');
+      })
+      .catch((error) => console.error('Error loading player skin:', error));
+  }
+
+  loadPlayerSkin(data, callback) {
+    return new Promise((resolve, reject) => {
+      const skinIndex = data.skin + 1;
+      const faceIndex = data.face + 1;
+      const hairIndex = data.hair * 12 + data.hair_color + 1;
+      const clothesIndex = data.clothes * 12 + data.clothes_color + 1;
+      this.load.spritesheet(
+        `skin-${skinIndex}`,
+        `${process.env.VITE_CLIENT_URL}/assets/sprites/skin/-${skinIndex}.png`,
+        {
+          frameWidth: 48,
+          frameHeight: 64,
+        },
+      );
+      this.load.spritesheet(
+        `face-${faceIndex}`,
+        `${process.env.VITE_CLIENT_URL}/assets/sprites/face/-${faceIndex}.png`,
+        {
+          frameWidth: 48,
+          frameHeight: 64,
+        },
+      );
+      this.load.spritesheet(
+        `hair-${hairIndex}`,
+        `${process.env.VITE_CLIENT_URL}/assets/sprites/hair/-${hairIndex}.png`,
+        {
+          frameWidth: 48,
+          frameHeight: 64,
+        },
+      );
+      this.load.spritesheet(
+        `clothes-${clothesIndex}`,
+        `${process.env.VITE_CLIENT_URL}/assets/sprites/clothes/-${clothesIndex}.png`,
+        {
+          frameWidth: 48,
+          frameHeight: 64,
+        },
+      );
+
+      this.load.once('complete', () => resolve());
+
+      // 로드 시작
+      this.load.start();
+    });
   }
 
   update() {
@@ -131,23 +143,42 @@ export default class Scene extends Phaser.Scene {
     switch (namespace) {
       case 'joinSpace':
         if (data.id !== SocketManager.getInstance().getID()) {
-          if (!this.otherPlayers[data.id]) {
-            this.otherPlayers[data.id] = new OtherPlayer(this, data);
-          }
+          this.loadPlayerSkin(data)
+            .then(() => {
+              if (!this.otherPlayers[data.id]) {
+                this.otherPlayers[data.id] = new OtherPlayer(this, data);
+              }
+            })
+            .catch((error) =>
+              console.error('Error loading player skin:', error),
+            );
         }
         break;
 
       case 'spaceUsers':
-        data.forEach((playerdata) => {
-          if (playerdata.id !== SocketManager.getInstance().getID()) {
-            if (!this.otherPlayers[playerdata.id]) {
-              this.otherPlayers[playerdata.id] = new OtherPlayer(
-                this,
-                playerdata,
-              );
-            }
-          }
-        });
+        const promises = data
+          .filter(
+            (playerData) =>
+              playerData.id !== SocketManager.getInstance().getID(),
+          )
+          .map((playerData) => this.loadPlayerSkin(playerData));
+
+        Promise.all(promises)
+          .then(() => {
+            data.forEach((playerData) => {
+              if (playerData.id !== SocketManager.getInstance().getID()) {
+                if (!this.otherPlayers[playerData.id]) {
+                  this.otherPlayers[playerData.id] = new OtherPlayer(
+                    this,
+                    playerData,
+                  );
+                }
+              }
+            });
+          })
+          .catch((error) =>
+            console.error('Error loading player skins:', error),
+          );
 
         break;
 
