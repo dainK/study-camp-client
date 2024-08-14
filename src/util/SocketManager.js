@@ -658,6 +658,19 @@ export default class SocketManager {
     }
   }
 
+  ChangeSkin(data) {
+    UserDataManager.getInstance().setUserSkinData(data);
+    this.socket.emit('changeSkin', UserDataManager.getInstance().getUserData());
+  }
+
+  ChangeNickName(nickName) {
+    UserDataManager.getInstance().setUserNickName(nickName);
+    this.socket.emit(
+      'changeNickName',
+      UserDataManager.getInstance().getUserData(),
+    );
+  }
+
   sendRoomMessage(message) {
     if (this.socket) {
       this.socket.emit(

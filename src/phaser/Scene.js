@@ -196,6 +196,34 @@ export default class Scene extends Phaser.Scene {
           leavePlayer.moveOtherPlayer(data.x, data.y);
         }
         break;
+
+      case 'changeSkin':
+        this.loadPlayerSkin(data)
+          .then(() => {
+            if (data.id !== SocketManager.getInstance().getID()) {
+              if (!this.otherPlayers[data.id]) {
+                this.otherPlayers[data.id] = new OtherPlayer(this, data);
+              } else {
+                this.otherPlayers[data.id].updateSkin(data);
+              }
+            } else {
+              this.player.updateSkin(data);
+            }
+          })
+          .catch((error) => console.error('Error loading player skin:', error));
+        break;
+
+      case 'changeNickName':
+        if (data.id !== SocketManager.getInstance().getID()) {
+          if (!this.otherPlayers[data.id]) {
+            this.otherPlayers[data.id] = new OtherPlayer(this, data);
+          } else {
+            this.otherPlayers[data.id].changeNickName(data.nickName);
+          }
+        } else {
+          this.player.changeNickName(data.nickName);
+        }
+        break;
     }
   }
 

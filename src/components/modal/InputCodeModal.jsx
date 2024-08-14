@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { requestEnterCode } from '../../util/request';
 
-const InviteCodeModal = ({ show, handleClose }) => {
+const InputCodeModal = ({ show, handleClose }) => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputsRef = useRef([]);
 
@@ -23,11 +24,18 @@ const InviteCodeModal = ({ show, handleClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const inviteCode = code.join('');
     console.log('Invite Code:', inviteCode);
-    handleClose(); // 모달을 닫습니다.
+
+    const data = await requestEnterCode();
+    if (data) {
+      window.location.href = `/space/${data.url}`;
+    } else {
+      alert('유효하지 않은 초대 코드 입니다.');
+      handleClose();
+    }
   };
 
   return (
@@ -71,4 +79,4 @@ const InviteCodeModal = ({ show, handleClose }) => {
   );
 };
 
-export default InviteCodeModal;
+export default InputCodeModal;

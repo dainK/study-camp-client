@@ -4,7 +4,8 @@ import Phaser from 'phaser';
 import Scene from '../phaser/Scene.js';
 import SpaceSidebar from './SpaceSidebar.jsx';
 import SocketManager from '../util/SocketManager.js';
-import { requestCheckSpace } from '../util/request.js';
+import { requestCheckSpace, requestSignupSpace } from '../util/request.js';
+import UserDataManager from '../util/UserDataManager.js';
 
 const Space = () => {
   const { id } = useParams();
@@ -17,10 +18,16 @@ const Space = () => {
         navigate('/');
       } else {
         const spaceId = await requestCheckSpace(id);
-        // console.log(check);
         if (!!spaceId) {
           console.log('유효한 ID:', id);
           window.addEventListener('resize', handleWindowResize);
+          // 로그인 체크
+          const isLogin = await UserDataManager.getInstance().checkLogin();
+          if (isLogin) {
+            const userId = UserDataManager.getInstance().getUserData().id;
+            // 멤버 가입
+            await requestSignupSpace(userId, spaceId);
+          }
           initGame();
           await SocketManager.getInstance().connect(spaceId);
         } else {

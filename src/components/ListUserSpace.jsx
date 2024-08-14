@@ -6,7 +6,7 @@ import { requestUserSpaceList, requestChekLogin } from '../util/request';
 import ReactPaginate from 'react-paginate';
 import EnterSpaceModal from './modal/EnterSpaceModal';
 import CreateSpaceModal from './modal/CreateSpaceModal';
-import InviteCodeModal from './modal/InviteCodeModal';
+import InputCodeModal from './modal/InputCodeModal';
 import UserDataManager from '../util/UserDataManager';
 
 const ListUserSpace = () => {
@@ -214,10 +214,7 @@ const ListUserSpace = () => {
         show={showCreateModal}
         handleClose={handleCloseCreateModal}
       />
-      <InviteCodeModal
-        show={showCodeModal}
-        handleClose={handleCloseCodeModal}
-      />
+      <InputCodeModal show={showCodeModal} handleClose={handleCloseCodeModal} />
     </>
   );
 };

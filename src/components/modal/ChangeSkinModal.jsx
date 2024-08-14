@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/ChangeSkinModal.css';
+import UserDataManager from '../../util/UserDataManager';
+import { requestChangeSkin } from '../../util/request';
+import SocketManager from '../../util/SocketManager';
 
 // 색상 배열
 const colorArray = [
@@ -20,29 +23,68 @@ const colorArray = [
 
 const ChangeSkinModal = ({ isOpen, onClose }) => {
   const [info, setInfo] = useState({
-    hairIndex: 0,
-    hairColorIndex: 0,
-    clothesIndex: 0,
-    clothesColorIndex: 0,
-    skinIndex: 0,
-    faceIndex: 0,
+    hairIndex: UserDataManager.getInstance().getUserData().hair,
+    hairColorIndex: UserDataManager.getInstance().getUserData().hair_color,
+    clothesIndex: UserDataManager.getInstance().getUserData().clothes,
+    clothesColorIndex:
+      UserDataManager.getInstance().getUserData().clothes_color,
+    skinIndex: UserDataManager.getInstance().getUserData().skin,
+    faceIndex: UserDataManager.getInstance().getUserData().face,
   });
   const [activeTab, setActiveTab] = useState('hair');
+  // const [selectedOption, setSelectedOption] = useState({
+  //   hair: null,
+  //   clothes: null,
+  //   skin: null,
+  //   face: null,
+  // });
   const [selectedOption, setSelectedOption] = useState({
-    hair: null,
-    clothes: null,
-    skin: null,
-    face: null,
+    hair: {
+      index: UserDataManager.getInstance().getUserData().hair,
+      colorIndex: UserDataManager.getInstance().getUserData().hair_color,
+    },
+    clothes: {
+      index: UserDataManager.getInstance().getUserData().clothes,
+      colorIndex: UserDataManager.getInstance().getUserData().clothes_color,
+    },
+    skin: { index: UserDataManager.getInstance().getUserData().skin },
+    face: { index: UserDataManager.getInstance().getUserData().face },
   });
 
   useEffect(() => {
     if (isOpen) {
-      setActiveTab('hair'); // 모달이 열릴 때 기본 탭을 'hair'로 설정
+      //setActiveTab('hair'); // 모달이 열릴 때 기본 탭을 'hair'로 설정
+      // 모달이 열릴 때 selectedOption을 info로 초기화
+      setSelectedOption({
+        hair: { index: info.hairIndex, colorIndex: info.hairColorIndex },
+        clothes: {
+          index: info.clothesIndex,
+          colorIndex: info.clothesColorIndex,
+        },
+        skin: { index: info.skinIndex },
+        face: { index: info.faceIndex },
+      });
     }
-  }, [isOpen]);
+  }, [isOpen, info]);
 
-  const handleSave = () => {
-    console.log('SAVE');
+  const handleSave = async () => {
+    const data = {
+      hair: selectedOption['hair'].index,
+      hair_color: selectedOption['hair'].colorIndex,
+      clothes: selectedOption['clothes'].index,
+      clothes_color: selectedOption['clothes'].colorIndex,
+      skin: selectedOption['skin'].index,
+      face: selectedOption['face'].index,
+    };
+
+    const isLogin = UserDataManager.getInstance().isLogin;
+    if (isLogin) {
+      const res = await requestChangeSkin(data);
+      if (!res) {
+        alert('유저 데이터 저장에 실패 하였습니다.');
+      }
+    }
+    SocketManager.getInstance().ChangeSkin(data);
     onClose();
   };
 
@@ -106,12 +148,11 @@ const ChangeSkinModal = ({ isOpen, onClose }) => {
           display: 'inline-block',
           margin: '0px',
           cursor: 'pointer',
-          border: selectedOption[type] === i ? '2px solid blue' : 'none', // 선택된 옵션에 테두리 추가
-          // boxShadow:
-          //   selectedOption[type] === i
-          //     ? '0 4px 8px rgba(0, 0, 0, 0.2)'
-          //     : 'none', // 선택된 옵션에 그림자 추가
-
+          border:
+            selectedOption[type]?.index === i &&
+            selectedOption[type]?.colorIndex === colorIndex
+              ? '2px solid blue'
+              : 'none', // 선택된 옵션에 테두리 추가
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         }}
         onClick={() => handleOptionClick(i, type)}

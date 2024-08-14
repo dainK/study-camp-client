@@ -102,6 +102,10 @@ export default class Player {
     this.player.destroy();
   }
 
+  changeNickName(nickName) {
+    this.nicknameText.setText(nickName);
+  }
+
   handleKeyPress(event) {
     var deltaX = 0;
     var deltaY = 0;

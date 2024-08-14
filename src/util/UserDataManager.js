@@ -97,12 +97,12 @@ export default class UserDataManager {
     };
   }
 
-  setSocketId(id) {
-    this.userData.id = id;
-  }
+  // setSocketId(id) {
+  //   this.userData.id = id;
+  // }
 
   setUserSkinData(data) {
-    this.userData.id = data.id;
+    // this.userData.id = data.id;
     this.userData.skin = data.skin;
     this.userData.face = data.face;
     this.userData.hair = data.hair;

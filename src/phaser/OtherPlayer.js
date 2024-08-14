@@ -80,6 +80,10 @@ export default class OtherPlayer {
     this.player.destroy();
   }
 
+  changeNickName(nickName) {
+    this.nicknameText.setText(nickName);
+  }
+
   getSprite() {
     return this.player;
   }
@@ -233,16 +237,6 @@ export default class OtherPlayer {
       this.dir = vector;
     }
   }
-
-  // movePosition(x, y) {
-  //   let vector = [0, 0];
-  //   if (Math.floor(this.x) !== Math.floor(x)) {
-  //     vector[0] = this.x > x ? -1 : 1;
-  //   }
-  //   if (Math.floor(this.y) !== Math.floor(y)) {
-  //     vector[1] = this.y > y ? -1 : 1;
-  //   }
-  // }
 
   updateSkin(data) {
     this.data.skin = data.skin;

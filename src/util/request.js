@@ -96,7 +96,6 @@ export const requestAllSpaceList = async () => {
   } catch (error) {
     console.error('학습공간 목록 전체 조회 실패', error);
     return [];
-    throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
   }
 };
 
@@ -114,7 +113,6 @@ export const requestUserSpaceList = async () => {
   } catch (error) {
     return [];
     console.error('유저 학습공간 목록 전체 조회 실패', error);
-    throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
   }
 };
 
@@ -134,8 +132,6 @@ export const requestEnterSpace = async (data) => {
     return response.data; // 응답 데이터만 반환
   } catch (error) {
     return false;
-    console.error('입장실패', error);
-    throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
   }
 };
 
@@ -153,7 +149,108 @@ export const requestCheckSpace = async (url) => {
     return response.data; // 응답 데이터만 반환
   } catch (error) {
     return false;
-    console.error('입장실패', error);
-    throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
+  }
+};
+
+//  닉네임 변경
+export const requestChangeNickName = async (data) => {
+  try {
+    // { nickName }
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      throw new Error('Access token not found');
+    }
+    const response = await axios.patch(
+      `${process.env.VITE_SERVER_URL}/user/nick`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+    return response.data; // 응답 데이터만 반환
+  } catch (error) {
+    console.error('Error changing nickname:', error);
+    return false;
+  }
+};
+
+// 옷 변경
+export const requestChangeSkin = async (data) => {
+  try {
+    // { 'skin', 'hair', 'face', 'clothes', 'hair_color', 'clothes_color'  }
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      throw new Error('Access token not found');
+    }
+    const response = await axios.patch(
+      `${process.env.VITE_SERVER_URL}/user`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+    return response.data; // 응답 데이터만 반환
+  } catch (error) {
+    console.error('Error changing skin:', error);
+    return false;
+  }
+};
+
+// 입장 코드 생성
+export const requestCreateCode = async (spaceId) => {
+  // data = { email, password };
+  try {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await axios.get(
+      `${process.env.VITE_SERVER_URL}/space/invitation${spaceId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+
+    return response;
+  } catch (error) {
+    console.error('Error create invite code', error);
+  }
+};
+
+// 입장 코드 입력
+export const requestEnterCode = async (data) => {
+  try {
+    // data ={ "code" }
+    if (data.code.length != 6) throw new Error('code length');
+    const accessToken = localStorage.getItem('access_token');
+    const response = await axios.patch(
+      `${process.env.VITE_SERVER_URL}/space/invitation/check`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+    return response.data; // 응답 데이터만 반환
+  } catch (error) {
+    console.error('Error changing skin:', error);
+    return false;
+  }
+};
+
+export const requestSignupSpace = async (userId, spaceId) => {
+  const data = { user_id: userId, space_id: spaceId };
+  try {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      throw new Error('Access token not found');
+    }
+    const response = await axios.post(
+      `${process.env.VITE_SERVER_URL}/space-member'`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+    return response;
+  } catch (error) {
+    // return false;
+    console.error('멤버 가입 실패:', error);
   }
 };
