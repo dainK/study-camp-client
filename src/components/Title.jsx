@@ -10,7 +10,7 @@ class Title extends React.Component {
           <div className="titleContainer">
             <div className="titleLeft">
               <Link to="/" className="titleButton">
-                <img src={`./title.png`} />
+                <img src={`${process.env.VITE_CLIENT_URL}/title.png`} />
               </Link>
             </div>
             <div></div>

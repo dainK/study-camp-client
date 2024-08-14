@@ -31,7 +31,7 @@ const InputCodeModal = ({ show, handleClose }) => {
 
     const data = await requestEnterCode();
     if (data) {
-      window.location.href = `/space/${data.url}`;
+      window.location.href = `${process.env.VITE_GITHUB_PAGE}/space/${data.url}`;
     } else {
       alert('유효하지 않은 초대 코드 입니다.');
       handleClose();

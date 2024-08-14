@@ -13,17 +13,14 @@ import {
 } from 'react-router-dom';
 function App() {
   return (
-    // <HashRouter basename={process.env.PUBLIC_URL}>
     // <HashRouter>
     <BrowserRouter>
-      {/* <div> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/space/:id" element={<Space />} />
       </Routes>
-      {/* </div> */}
     </BrowserRouter>
   );
 }

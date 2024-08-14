@@ -20,7 +20,7 @@ const EnterSpaceModal = ({ show, handleClose, space }) => {
       });
       console.log(res);
       if (!!res && !!res.url) {
-        window.location.href = `/space/${res.url}`;
+        window.location.href = `${process.env.VITE_GITHUB_PAGE}/space/${res.url}`;
       } else {
         alert('입장에 실패했습니다.');
       }
@@ -31,7 +31,7 @@ const EnterSpaceModal = ({ show, handleClose, space }) => {
         password: formData.get('password'),
       });
       if (!!res && !!res.url) {
-        window.location.href = `/space/${res.url}`;
+        window.location.href = `${process.env.VITE_GITHUB_PAGE}/space/${res.url}`;
       } else {
         alert('비밀번호가 맞지 않습니다.');
       }

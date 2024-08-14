@@ -34,7 +34,7 @@ class Header extends React.Component {
         <div className="headContainer">
           <div className="headLeft">
             <Link to="/" className="headButton">
-              <img src={`./title.png`} />
+              <img src={`${process.env.VITE_CLIENT_URL}/title.png`} />
             </Link>
             <div
               className="menuItem"

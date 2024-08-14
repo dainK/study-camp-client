@@ -23,7 +23,7 @@ class Signup extends React.Component {
     if (!!res && !!res.data) {
       console.log(res.data);
       alert('회원가입 성공');
-      window.location.href = '/';
+      window.location.href = `${process.env.VITE_GITHUB_PAGE}/`;
     } else {
       alert('회원가입 실패');
     }
