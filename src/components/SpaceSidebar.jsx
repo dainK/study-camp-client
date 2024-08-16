@@ -5,6 +5,7 @@ import SocketManager from '../util/SocketManager';
 import UserDataManager from '../util/UserDataManager';
 import ChangeSkinModal from './modal/ChangeSkinModal';
 import ChangeNickModal from './modal/ChangeNickModal';
+import CreateCodeModal from './modal/CreateCodeModal';
 
 const SpaceSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ const SpaceSidebar = () => {
 
   const [isSkinModalOpen, setIsSkinModalOpen] = useState(false);
   const [isNickModalOpen, setIsNickModalOpen] = useState(false);
+  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
 
   useEffect(() => {
     SocketManager.getInstance().setMessagCallback(
@@ -51,6 +53,13 @@ const SpaceSidebar = () => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogo = () => {
+    if (window.game) {
+      window.game.destroy(true);
+    }
+    SocketManager.getInstance().disconnect();
   };
 
   const handleMicClick = () => {
@@ -112,6 +121,13 @@ const SpaceSidebar = () => {
     setIsNickModalOpen(false);
   };
 
+  const handleOpenCodeModal = () => {
+    setIsCodeModalOpen(true);
+  };
+
+  const handleCloseCodeModal = () => {
+    setIsCodeModalOpen(false);
+  };
   // 상태 추가: 카드 목록
   const [cards, setCards] = useState([]);
   // 카드 추가 함수
@@ -278,11 +294,13 @@ const SpaceSidebar = () => {
 
       {inButton == 'home' && (
         <div className="sidebar-container">
-          <Link to="/" className="image-wrapper">
+          <Link to="/" className="image-wrapper" onClick={handleLogo}>
             <img src="/title.png" className="responsive-image" />
           </Link>
           <h3>스페이스이름</h3>
-          <div className="btn">초대코드</div>
+          <div className="btn" onClick={handleOpenCodeModal}>
+            초대코드
+          </div>
           <h3>닉네임</h3>
           <div className="btn" onClick={handleOpenNickModal}>
             닉네임 변경
@@ -355,6 +373,10 @@ const SpaceSidebar = () => {
         </div>
       )}
 
+      <CreateCodeModal
+        show={isCodeModalOpen}
+        handleClose={handleCloseCodeModal}
+      />
       <ChangeNickModal
         isOpen={isNickModalOpen}
         onClose={handleCloseNickModal}

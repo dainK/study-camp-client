@@ -168,6 +168,7 @@ const ListPublic = () => {
           show={showModal}
           handleClose={handleCloseModal}
           space={selectedSpace}
+          isUserSpace={false}
         />
       )}
     </>

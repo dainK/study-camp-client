@@ -223,6 +223,7 @@ const ListUserSpace = () => {
           show={showModal}
           handleClose={handleCloseModal}
           space={selectedSpace}
+          isUserSpace={true}
         />
       )}
 

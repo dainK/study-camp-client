@@ -4,10 +4,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/Modal.css';
 import { requestEnterSpace } from '../../util/request';
 
-const EnterSpaceModal = ({ show, handleClose, space }) => {
+const EnterSpaceModal = ({ show, handleClose, space, isUserSpace }) => {
   const [password, setPassword] = useState('');
   console.log(space);
   const [isPublic, setIsPublic] = useState(space.isPublic);
+  const [isUser, setIsUser] = useState(isUserSpace);
 
   const handleSubmit = async (e) => {
     console.log(isPublic);
@@ -64,7 +65,7 @@ const EnterSpaceModal = ({ show, handleClose, space }) => {
           <p>{space?.content || ''}</p>
 
           {/* 비공개일 경우 비밀번호 입력 필드 */}
-          {!isPublic && (
+          {!isPublic && !isUser && (
             <Form.Group controlId="formPassword" className="mt-3">
               <Form.Label>비공개 방입니다</Form.Label>
               <Form.Control

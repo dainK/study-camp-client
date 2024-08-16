@@ -28,7 +28,10 @@ class Home extends React.Component {
     // const res = await requestLogout();
     // console.log(res);
     UserDataManager.getInstance().logOut();
-    this.setState({ isUser: false });
+    this.setState({ isUser: false }, () => {
+      // 상태가 변경된 후에 Notice와 List를 다시 로드
+      this.forceUpdate();
+    });
   };
 
   render() {
@@ -79,8 +82,9 @@ class Home extends React.Component {
 
         <div className="home">
           <div className="homeContainer">
-            <Notice />
-            <List />
+            {/* isUser 상태와 컴포넌트의 이름을 조합하여 고유한 키를 생성 */}
+            <Notice key={`Notice-${isUser ? 'loggedIn' : 'loggedOut'}`} />
+            <List key={`List-${isUser ? 'loggedIn' : 'loggedOut'}`} />
           </div>
         </div>
       </div>

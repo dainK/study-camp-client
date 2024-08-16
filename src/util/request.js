@@ -40,6 +40,7 @@ export const requestLogin = async (data) => {
 
 export const requestLogout = async () => {
   const accessToken = localStorage.getItem('access_token');
+  localStorage.removeItem('access_token');
   try {
     const response = await axios.post(
       `${process.env.VITE_SERVER_URL}/auth/logout`,
@@ -49,7 +50,6 @@ export const requestLogout = async () => {
         // withCredentials: true,
       },
     );
-    localStorage.removeItem('access_token');
     return response;
   } catch (error) {
     console.error('유저 정보 조회 실패:', error);
@@ -91,7 +91,10 @@ export const requestUserProfile = async () => {
 
 export const requestAllSpaceList = async () => {
   try {
-    const response = await axios.get(`${process.env.VITE_SERVER_URL}/space`);
+    const accessToken = localStorage.getItem('access_token') || null;
+    const response = await axios.get(`${process.env.VITE_SERVER_URL}/space`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     // console.log('학습공간 목록 전체 조회 성공', response.data);
     return response.data; // 응답 데이터만 반환
   } catch (error) {
@@ -102,7 +105,10 @@ export const requestAllSpaceList = async () => {
 
 export const requestUserSpaceList = async () => {
   try {
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getItem('access_token') || null;
+    if (!accessToken) {
+      return [];
+    }
     const response = await axios.get(
       `${process.env.VITE_SERVER_URL}/space-member/user`,
       {
@@ -203,7 +209,7 @@ export const requestCreateCode = async (spaceId) => {
   try {
     const accessToken = localStorage.getItem('access_token');
     const response = await axios.get(
-      `${process.env.VITE_SERVER_URL}/space/invitation${spaceId}`,
+      `${process.env.VITE_SERVER_URL}/space/invitation/${spaceId}`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
@@ -216,12 +222,12 @@ export const requestCreateCode = async (spaceId) => {
 };
 
 // 입장 코드 입력
-export const requestEnterCode = async (data) => {
+export const requestEnterCode = async (code) => {
   try {
-    // data ={ "code" }
-    if (data.code.length != 6) throw new Error('code length');
+    const data = { code: code };
+    if (code.length != 6) throw new Error('code length');
     const accessToken = localStorage.getItem('access_token');
-    const response = await axios.patch(
+    const response = await axios.post(
       `${process.env.VITE_SERVER_URL}/space/invitation/check`,
       data,
       {
@@ -252,7 +258,7 @@ export const requestSignupSpace = async (userId, spaceId) => {
     return response;
   } catch (error) {
     // return false;
-    console.error('멤버 가입 실패:', error);
+    // console.error('멤버 가입 실패:', error);
   }
 };
 
