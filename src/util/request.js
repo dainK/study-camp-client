@@ -255,3 +255,35 @@ export const requestSignupSpace = async (userId, spaceId) => {
     console.error('멤버 가입 실패:', error);
   }
 };
+
+// 스페이스 생성 (이미지)
+export const requestCreateSpace = async (spaceData) => {
+  const accessToken = localStorage.getItem('access_token');
+
+  // FormData 객체 생성
+  const formData = new FormData();
+  formData.append('name', spaceData.name);
+  formData.append('content', spaceData.content);
+  formData.append('password', spaceData.password || ''); // 공개 스페이스의 경우 빈 문자열
+  if (spaceData.image) {
+    formData.append('image', spaceData.image);
+  }
+
+  try {
+    const response = await axios.post(
+      `${process.env.VITE_SERVER_URL}/space`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+
+    return response.data; // 생성된 스페이스 정보 반환
+  } catch (error) {
+    console.error('스페이스 생성 실패:', error);
+    throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
+  }
+};
