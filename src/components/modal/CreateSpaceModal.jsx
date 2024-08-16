@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { requestCreateSpace } from '../../util/request'; // requestCreateSpace 함수를 import
 
 const CreateSpaceModal = ({ show, handleClose }) => {
   const [name, setName] = useState('');
@@ -10,20 +11,29 @@ const CreateSpaceModal = ({ show, handleClose }) => {
   const [password, setPassword] = useState('');
 
   const handleImageChange = (e) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
+    setImage(e.target.files[0]); // 이미지 파일을 state에 저장
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 학습공간 생성 로직 처리
-    console.log({
+
+    // 학습공간 생성 데이터
+    const spaceData = {
       name,
       image,
       content,
-      isPublic,
-      password: isPublic ? null : password,
-    });
-    handleClose();
+      password: isPublic ? '' : password,
+    };
+
+    try {
+      const response = await requestCreateSpace(spaceData);
+      console.log('스페이스 생성 성공:', response);
+      // 추가 처리 (예: 사용자에게 알림 또는 페이지 이동 등)
+      handleClose(); // 모달 닫기
+    } catch (error) {
+      console.error('스페이스 생성 중 오류 발생:', error);
+      // 에러 처리 (예: 사용자에게 알림)
+    }
   };
 
   return (
@@ -54,16 +64,9 @@ const CreateSpaceModal = ({ show, handleClose }) => {
             {image && (
               <div className="mt-3">
                 <img
-                  src={image}
+                  src={URL.createObjectURL(image)}
                   style={{ width: '100%', aspectRatio: '2 / 1' }}
-                />
-              </div>
-            )}
-            {!image && (
-              <div className="mt-3">
-                <img
-                  src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png"
-                  style={{ width: '100%', aspectRatio: '2 / 1' }}
+                  alt="학습공간 썸네일"
                 />
               </div>
             )}
