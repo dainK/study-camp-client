@@ -34,7 +34,7 @@ class Home extends React.Component {
   render() {
     const { isUser } = this.state;
     return (
-      <div>
+      <div className="home">
         <header className="header">
           <div className="headContainer">
             <div className="headLeft">

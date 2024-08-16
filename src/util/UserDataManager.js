@@ -40,13 +40,18 @@ export default class UserDataManager {
 
     const check = await requestChekLogin();
     if (check) {
-      this.setUserData(check);
+      this.setUserData(check.data);
       this.isLogin = true;
       return true;
     } else {
       this.logOut();
       return false;
     }
+  }
+
+  setUserData(data) {
+    this.setUserSkinData(data);
+    this.setUserNickName(data.nick_name);
   }
 
   isLoginState() {

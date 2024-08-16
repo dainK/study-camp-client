@@ -146,7 +146,12 @@ const ListUserSpace = () => {
                 currentSpaceList.map((space, index) => (
                   <div key={index} className="grid-item">
                     <Card
-                      style={{ margin: '3%', aspectRatio: '2/1' }}
+                      style={{
+                        margin: '3%',
+                        aspectRatio: '2 / 1',
+                        width: '100%',
+                        overflow: 'hidden', // 이미지가 넘치는 경우를 방지
+                      }}
                       onClick={() => handleCardClick(space)}
                       role="button"
                     >
@@ -156,8 +161,19 @@ const ListUserSpace = () => {
                           'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png'
                         }
                         alt="Card image"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
+                        }}
                       />
-                      <Card.ImgOverlay>
+                      <Card.ImgOverlay
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'end',
+                          alignItems: 'end',
+                        }}
+                      >
                         <span className="count-text">
                           {space.membersCount}명
                         </span>

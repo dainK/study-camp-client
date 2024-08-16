@@ -43,6 +43,7 @@ export const requestLogout = async () => {
   try {
     const response = await axios.post(
       `${process.env.VITE_SERVER_URL}/auth/logout`,
+      {},
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         // withCredentials: true,

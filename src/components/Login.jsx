@@ -12,10 +12,10 @@ class Login extends React.Component {
     const password = formData.get('password');
 
     const res = await requestLogin({ email, password });
-    console.log(res.data);
     if (!!res.data && res.data.access_token) {
       window.location.href = `${process.env.VITE_GITHUB_PAGE}/`;
     } else {
+      alert('로그인에 실패하였습니다.');
     }
   };
   render() {
