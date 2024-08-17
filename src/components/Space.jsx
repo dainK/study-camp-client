@@ -19,14 +19,13 @@ const Space = () => {
       } else {
         const spaceId = await requestCheckSpace(id);
         if (!!spaceId) {
-          console.log('유효한 ID:', id);
+          // console.log('유효한 ID:', id);
           window.addEventListener('resize', handleWindowResize);
           // 로그인 체크
           const isLogin = await UserDataManager.getInstance().checkLogin();
           if (isLogin) {
-            const userId = UserDataManager.getInstance().getUserData().id;
             // 멤버 가입
-            await requestSignupSpace(userId, spaceId);
+            await requestSignupSpace(spaceId);
           }
           initGame();
           await SocketManager.getInstance().connect(spaceId);
@@ -40,7 +39,7 @@ const Space = () => {
     setupGame();
 
     return () => {
-      console.log('클린업');
+      // console.log('클린업');
       window.removeEventListener('resize', handleWindowResize);
       if (window.game) {
         window.game.destroy(true);

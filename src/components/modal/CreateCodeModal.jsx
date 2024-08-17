@@ -1,48 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { requestCreateCode } from '../../util/request';
+import UserDataManager from '../../util/UserDataManager';
 
 const CreateCodeModal = ({ show, handleClose }) => {
-  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [code, setCode] = useState('');
   const [copied, setCopied] = useState(false);
-  const inputsRef = useRef([]);
-
-  useEffect(async () => {
-    if (show) {
-      let newCode = '';
-      const res = requestCreateCode();
-      if (!!res && !!res.data) {
-        newCode = res.data.code;
-      }
-      setCode(newCode.split(''));
-    }
-  }, [show]);
-
-  const handleChange = (e, index) => {
-    const newCode = [...code];
-    newCode[index] = e.target.value.toUpperCase();
-    setCode(newCode);
-
-    // 자동으로 다음 칸으로 이동
-    if (e.target.value && index < 5) {
-      inputsRef.current[index + 1].focus();
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && index > 0 && !code[index]) {
-      inputsRef.current[index - 1].focus();
-    }
-  };
 
   const handleCopy = () => {
-    const inviteCode = code.join('');
-    navigator.clipboard.writeText(inviteCode).then(() => {
+    navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // 2초 후에 복사 알림 사라지기
     });
   };
+
+  useEffect(() => {
+    const fetchCode = async () => {
+      try {
+        const spaceId = UserDataManager.getInstance().getUserData().spaceId;
+        const res = await requestCreateCode(spaceId); // 비동기 호출
+        if (res && res.data) {
+          setCode(res.data.code); // 코드 상태 업데이트
+        }
+      } catch (error) {
+        console.error('Failed to fetch code:', error);
+      }
+    };
+
+    if (show) {
+      fetchCode(); // 모달이 열릴 때 코드 요청
+    }
+  }, [show]); // `show`가 변경될 때마다 실행
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -51,30 +40,22 @@ const CreateCodeModal = ({ show, handleClose }) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <div className="d-flex justify-content-between mb-3">
-            {code.map((_, index) => (
-              <Form.Control
-                key={index}
-                type="text"
-                maxLength="1"
-                value={code[index]}
-                onChange={(e) => handleChange(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                ref={(el) => (inputsRef.current[index] = el)}
-                style={{
-                  width: '3rem',
-                  height: '3rem',
-                  textAlign: 'center',
-                  fontSize: '2rem',
-                }}
-                readOnly
-              />
-            ))}
-          </div>
+          <Form.Group>
+            <Form.Control
+              type="text"
+              value={code}
+              readOnly
+              style={{
+                textAlign: 'center',
+                fontSize: '2rem',
+                letterSpacing: '0.1em',
+              }}
+            />
+          </Form.Group>
           <Button
             variant="outline-primary"
             onClick={handleCopy}
-            style={{ width: '100%' }}
+            style={{ width: '100%', marginTop: '1rem' }}
           >
             {copied ? '복사됨!' : '복사하기'}
           </Button>

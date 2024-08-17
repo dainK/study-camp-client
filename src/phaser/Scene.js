@@ -139,7 +139,7 @@ export default class Scene extends Phaser.Scene {
   }
 
   eventscallback(namespace, data) {
-    console.log('eventscallback' + '_' + namespace);
+    // console.log('eventscallback' + '_' + namespace);
     switch (namespace) {
       case 'joinSpace':
         if (data.id !== SocketManager.getInstance().getID()) {

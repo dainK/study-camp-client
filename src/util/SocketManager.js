@@ -88,15 +88,6 @@ export default class SocketManager {
         'url("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjRDSj%2FbtsI2et2DUp%2FElFau2y51XvmKMqyqG4qi1%2Fimg.png")';
       this.myCard.style.backgroundSize = 'cover';
       this.myCard.style.backgroundPosition = 'center';
-
-      // const text = document.createElement('div');
-      // text.innerText = UserDataManager.getInstance().getUserData().nickName;
-      // text.style.color = 'white';
-      // text.style.fontSize = '14px';
-      // text.style.fontWeight = 'bold';
-      // text.style.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.7)';
-      // text.style.pointerEvents = 'none';
-      // this.myCard.appendChild(text);
     }
     this.myScreen = document.getElementById('card_screen');
     if (!this.myScreen) {
@@ -117,15 +108,9 @@ export default class SocketManager {
     // 더미 오디오
     this.audioContext = new AudioContext();
 
-    this.socket.on('connect', async (socket) => {
-      console.log('connect', socket);
-    });
+    this.socket.on('connect', async (socket) => {});
 
-    this.socket.on('disconnect', async (socket) => {
-      console.log('disconnect', socket);
-      // this.publish('disconnect', {id:this.socketID});
-      // this.removeCard(socket.id);
-    });
+    this.socket.on('disconnect', async (socket) => {});
 
     this.socket.on('joinSpace', async (data) => {
       this.publish('joinSpace', data);
@@ -156,13 +141,12 @@ export default class SocketManager {
     this.socket.on('joinLayer', async (data) => {
       this.layerUsers.push(data);
       if (data.id != this.socket.id) {
-        console.log('joinLayer', data);
+        // console.log('joinLayer', data);
         this.createCard(data);
 
         // 내가 카메라 공유중일때 들어온사람한테 연결
         if (this.mediaStream) {
           this.createOffer(data.id, 'camera');
-          // this.hideCard(data.id);
         }
 
         // 내가 카메라 공유중일때 들어온사람한테 연결
@@ -179,8 +163,6 @@ export default class SocketManager {
     });
 
     this.socket.on('layerUsers', async (layerUsers) => {
-      console.log('Layer users', layerUsers);
-
       // 새로운 멤버카드 생성
       layerUsers.forEach((data) => {
         if (data.id != this.socket.id) {
@@ -214,7 +196,6 @@ export default class SocketManager {
     });
 
     this.socket.on('leaveLayer', (data) => {
-      console.log('Left layer', data);
       this.layerUsers = this.layerUsers.filter((user) => user.id !== data.id);
 
       // 남이 나갈 때
@@ -249,7 +230,6 @@ export default class SocketManager {
     // });
 
     this.socket.on('spaceMessage', (data) => {
-      console.log('spaceMessage', data);
       this.spaceMessageCallback(data);
     });
 
@@ -257,32 +237,22 @@ export default class SocketManager {
     // });
 
     this.socket.on('layerMessage', (data) => {
-      console.log('layerMessage', data);
       this.roomMessageCallback(data);
     });
 
     this.socket.on('movePlayer', (data) => {
-      // console.log('movePlayer', data);
       this.publish('movePlayer', data);
     });
     this.socket.on('changeNickName', (data) => {
-      // console.log('movePlayer', data);
       this.publish('changeNickName', data);
     });
     this.socket.on('changeSkin', (data) => {
-      // console.log('movePlayer', data);
       this.publish('changeSkin', data);
     });
 
     this.socket.on('offer', async (data) => {
-      // const { offer, socketId } = data;
-      // console.log('Received offer from', socketId);
-      // await this.handleOffer(offer, socketId);
-      // console.log(`Received offer from user: ${data.sender}`);
       if (data.sender !== this.socket.id) {
-        // console.log(`offer`);
         if (!this.peerConnections[`${data.sender}_${data.status}`]) {
-          console.log(`createAnswer`);
           const peerConnection = await this.createAnswerPeerConnection(
             data.sender,
             data.status,
@@ -306,10 +276,6 @@ export default class SocketManager {
     });
 
     this.socket.on('answer', async (data) => {
-      // const { answer, socketId } = data;
-      // await this.handleAnswer(answer, socketId);
-      // console.log(`Received answer from user: ${data.sender}`);
-      console.log('answer');
       if (
         data.sender !== this.socket.id &&
         this.peerConnections[`${data.sender}_${data.status}_res`]
@@ -325,10 +291,6 @@ export default class SocketManager {
     });
 
     this.socket.on('candidate', async (data) => {
-      // const { candidate, socketId } = data;
-      // console.log('Received candidate from', socketId);
-      // await this.handleCandidate(candidate, socketId);
-      console.log(`candidate: ${data.sender}`);
       const name = data.sender + '_' + data.status;
       if (data.sender !== this.socket.id && this.peerConnections[name]) {
         try {
@@ -344,7 +306,6 @@ export default class SocketManager {
     this.socket.on('cameraon', async (id) => {
       if (id != this.socket.id) {
         this.hideCard(id);
-      } else {
       }
     });
     this.socket.on('cameraoff', async (id) => {
@@ -364,18 +325,7 @@ export default class SocketManager {
         this.showCard(id);
       }
     });
-    this.socket.on('screenon', async (id) => {
-      if (id != this.socket.id) {
-        // this.hideCard(id);
-      } else {
-      }
-      // if (id != this.socket.id) {
-      //   const screen = document.getElementById(`card_${id}_screen`);
-      //   if (screen) {
-      //     screen.style.display = 'block';
-      //   }
-      // }
-    });
+    this.socket.on('screenon', async (id) => {});
     this.socket.on('screenoff', async (id) => {
       if (id != this.socket.id) {
         const peerConnection = this.peerConnections[`${id}_screen`];
@@ -390,7 +340,6 @@ export default class SocketManager {
         } else {
           console.error('상대방의 카메라가 없음');
         }
-        // this.showCard(id);
       }
     });
     this.socket.on('voiceon', async (id) => {
@@ -440,9 +389,7 @@ export default class SocketManager {
     const peerConnection = this.createOfferPeerConnection(targetUserId, status);
     try {
       const offer = await peerConnection.createOffer();
-      // console.log(`Created offer for user: ${targetUserId}`);
       await peerConnection.setLocalDescription(offer);
-      // console.log(`Set local description for user: ${targetUserId}`);
       this.socket.emit('offer', {
         sdp: peerConnection.localDescription,
         target: targetUserId,
@@ -491,9 +438,7 @@ export default class SocketManager {
     }
 
     peerConnection.onicecandidate = (event) => {
-      // console.log(`candidate 요청`);
       if (event.candidate) {
-        // console.log(`candidate 받음: ${userId}`);
         this.socket.emit('candidate', {
           candidate: event.candidate,
           target: userId,
@@ -505,14 +450,13 @@ export default class SocketManager {
     peerConnection.ontrack = (event) => {
       const [stream] = event.streams;
       const streamId = stream.id;
-      console.log('요청 피어', status, userId);
+      // console.log('요청 피어', status, userId);
     };
 
     return peerConnection;
   }
 
   async createAnswerPeerConnection(userId, status) {
-    // console.log(`Creating peer connection for user: ${userId}`);
     const peerConnection = new RTCPeerConnection(this.servers);
     this.peerConnections[`${userId}_${status}`] = peerConnection;
 
@@ -532,7 +476,6 @@ export default class SocketManager {
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        // console.log(`candidate: ${userId}`);
         this.socket.emit('candidate', {
           candidate: event.candidate,
           target: userId,
@@ -544,7 +487,7 @@ export default class SocketManager {
     peerConnection.ontrack = (event) => {
       const [stream] = event.streams;
       const streamId = stream.id;
-      console.log('응답 피어', userId);
+      // console.log('응답 피어', userId);
 
       if (status == 'camera') {
         let video = document.getElementById(`card_${userId}_camera`);
@@ -605,13 +548,6 @@ export default class SocketManager {
       this.socket.emit(
         'joinSpace',
         UserDataManager.getInstance().getUserData(),
-        (response) => {
-          if (response.status === 'success') {
-            console.log(response.message);
-          } else {
-            console.error(response.message);
-          }
-        },
       );
     }
   }
@@ -622,13 +558,6 @@ export default class SocketManager {
       this.socket.emit(
         'movePlayer',
         UserDataManager.getInstance().getUserData(),
-        (response) => {
-          if (response.status === 'success') {
-            console.log(response.message);
-          } else {
-            console.error(response.message);
-          }
-        },
       );
     }
   }
@@ -644,17 +573,10 @@ export default class SocketManager {
 
   sendSpaceMessage(message) {
     if (this.socket) {
-      this.socket.emit(
-        'sendSpaceMessage',
-        { ...UserDataManager.getInstance().getUserData(), message },
-        (response) => {
-          if (response.status === 'success') {
-            console.log(response.message);
-          } else {
-            console.error(response.message);
-          }
-        },
-      );
+      this.socket.emit('sendSpaceMessage', {
+        ...UserDataManager.getInstance().getUserData(),
+        message,
+      });
     }
   }
 
@@ -673,17 +595,10 @@ export default class SocketManager {
 
   sendRoomMessage(message) {
     if (this.socket) {
-      this.socket.emit(
-        'sendLayerMessage',
-        { ...UserDataManager.getInstance().getUserData(), message },
-        (response) => {
-          if (response.status === 'success') {
-            console.log(response.message);
-          } else {
-            console.error(response.message);
-          }
-        },
-      );
+      this.socket.emit('sendLayerMessage', {
+        ...UserDataManager.getInstance().getUserData(),
+        message,
+      });
     }
   }
 
@@ -705,7 +620,6 @@ export default class SocketManager {
         alert('미디어 장치에 접근할 수 없습니다');
         this.setCameraFunc(false);
         this.stopCamera();
-        // console.error('미디어 장치에 접근할 수 없습니다:', error);
         throw '미디어 장치에 접근할 수 없습니다';
       }
 
@@ -714,10 +628,8 @@ export default class SocketManager {
       });
 
       this.socket.emit('webRTCStatus', { type: 'camera', status: 'on' });
-      // return true;
     } catch (err) {
       console.error('startCamera', err);
-      // return false;
       this.setCameraFunc(false);
       this.stopCamera();
     }

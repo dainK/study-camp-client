@@ -24,16 +24,35 @@ const InputCodeModal = ({ show, handleClose }) => {
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text').toUpperCase();
+    const newCode = pasteData.slice(0, 6).split(''); // 최대 6자리까지
+
+    setCode((prevCode) => {
+      const updatedCode = [...prevCode];
+      newCode.forEach((char, i) => {
+        updatedCode[i] = char;
+      });
+      return updatedCode;
+    });
+
+    // 자동으로 마지막 칸으로 이동
+    if (newCode.length === 6) {
+      inputsRef.current[5].focus();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inviteCode = code.join('');
-    console.log('Invite Code:', inviteCode);
+    // console.log('Invite Code:', inviteCode);
 
-    const data = await requestEnterCode();
+    const data = await requestEnterCode(inviteCode);
     if (data) {
       window.location.href = `${process.env.VITE_GITHUB_PAGE}/space/${data.url}`;
     } else {
-      alert('유효하지 않은 초대 코드 입니다.');
+      alert('유효하지 않은 초대 코드입니다.');
       handleClose();
     }
   };
@@ -54,13 +73,13 @@ const InputCodeModal = ({ show, handleClose }) => {
                 value={code[index]}
                 onChange={(e) => handleChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={handlePaste}
                 ref={(el) => (inputsRef.current[index] = el)}
                 style={{
                   width: '3rem',
                   height: '3rem',
                   textAlign: 'center',
                   fontSize: '2rem',
-                  // marginRight: index < 5 ? '0.5rem' : '0',
                 }}
               />
             ))}
