@@ -25,8 +25,8 @@ const Notice = () => {
     slidesToShow: slidesToShow,
     slidesToScroll: 1,
     autoplay: true,
-    speed: 4000,
-    autoplaySpeed: 1000,
+    speed: 5000,
+    autoplaySpeed: 2000,
     cssEase: 'linear',
   };
   return (
@@ -40,12 +40,7 @@ const Notice = () => {
             >
               <div>
                 <Card
-                  style={{
-                    margin: '3%',
-                    width: '94%',
-                    aspectRatio: '2/1',
-                    overflow: 'hidden',
-                  }}
+                  style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
                 >
                   <Card.Img
                     src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fba7L4D%2FbtsITk2KPVl%2FDXivyJm0LF3UzcUp93MGT0%2Fimg.png"
@@ -56,21 +51,34 @@ const Notice = () => {
                       objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                     }}
                   />
+
                   {/* <Card.ImgOverlay>
-                    <Card.Title>공지 2</Card.Title>
-                    <Card.Text>공지 내용 2</Card.Text>
+                    <Card.Title
+                      style={{
+                        // color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '20px',
+                      }}
+                    >
+                      캐릭터 이동
+                    </Card.Title>
                   </Card.ImgOverlay> */}
                 </Card>
               </div>
               <div>
                 <Card
-                  style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
+                  style={{
+                    margin: '3%',
+                    width: '94%',
+                    aspectRatio: '2/1',
+                    overflow: 'hidden',
+                  }}
                 >
                   <Card.Img
-                    src="https://blog.kakaocdn.net/dn/3P9pm/btsI6CB2WWI/lcRvmFbBwLOQKv9uF0YKd1/img.gif"
+                    src="https://blog.kakaocdn.net/dn/bvmv2T/btsI7VmMByF/RYzOXqhNqaqOw7WFtZat4K/img.gif"
                     alt="Card image"
                     style={{
-                      width: '100%',
+                      // width: '100%',
                       height: '100%',
                       objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                     }}
@@ -79,12 +87,12 @@ const Notice = () => {
                   <Card.ImgOverlay>
                     <Card.Title
                       style={{
-                        color: 'white',
+                        // color: 'white',
                         fontWeight: 'bold',
                         fontSize: '20px',
                       }}
                     >
-                      캐릭터
+                      캐릭터 꾸미기
                     </Card.Title>
                     {/* <Card.Text>공지 내용 2</Card.Text> */}
                   </Card.ImgOverlay>
@@ -106,7 +114,7 @@ const Notice = () => {
                   <Card.ImgOverlay>
                     <Card.Title
                       style={{
-                        color: 'white',
+                        // color: 'white',
                         fontWeight: 'bold',
                         fontSize: '20px',
                       }}
@@ -115,7 +123,7 @@ const Notice = () => {
                     </Card.Title>
                     <Card.Text
                       style={{
-                        color: 'white',
+                        // color: 'white',
                         fontWeight: 'bold',
                       }}
                     >
