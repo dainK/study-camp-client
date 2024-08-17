@@ -40,11 +40,21 @@ const Notice = () => {
             >
               <div>
                 <Card
-                  style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
+                  style={{
+                    margin: '3%',
+                    width: '94%',
+                    aspectRatio: '2/1',
+                    overflow: 'hidden',
+                  }}
                 >
                   <Card.Img
                     src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fba7L4D%2FbtsITk2KPVl%2FDXivyJm0LF3UzcUp93MGT0%2Fimg.png"
                     alt="Card image"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
+                    }}
                   />
                   {/* <Card.ImgOverlay>
                     <Card.Title>공지 2</Card.Title>
@@ -57,8 +67,13 @@ const Notice = () => {
                   style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
                 >
                   <Card.Img
-                    src="https://via.placeholder.com/800x400"
+                    src="https://blog.kakaocdn.net/dn/3P9pm/btsI6CB2WWI/lcRvmFbBwLOQKv9uF0YKd1/img.gif"
                     alt="Card image"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
+                    }}
                   />
                   {/* <Card.ImgOverlay>
                       <Card.Title>공지 2</Card.Title>
@@ -73,6 +88,11 @@ const Notice = () => {
                   <Card.Img
                     src="https://via.placeholder.com/800x400"
                     alt="Card image"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
+                    }}
                   />
                   {/* <Card.ImgOverlay>
                       <Card.Title>공지 2</Card.Title>
