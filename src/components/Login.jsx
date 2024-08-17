@@ -2,7 +2,11 @@ import React from 'react';
 import './styles/Login.css';
 import Title from './Title';
 import { Card, Modal, Button, Form } from 'react-bootstrap';
-import { requestLogin } from '../util/request';
+import {
+  requestLogin,
+  handleKakaoLogin,
+  handleGoogleLogin,
+} from '../util/request';
 
 class Login extends React.Component {
   handleSubmit = async (event) => {
@@ -51,10 +55,18 @@ class Login extends React.Component {
                 >
                   Login
                 </Button>
-                <button type="button" className="google-login-button">
+                <button
+                  type="button"
+                  className="google-login-button"
+                  onClick={handleGoogleLogin}
+                >
                   Login with Google
                 </button>
-                <button type="button" className="kakao-login-button">
+                <button
+                  type="button"
+                  className="kakao-login-button"
+                  onClick={handleKakaoLogin}
+                >
                   Login with Kakao
                 </button>
               </Form>
