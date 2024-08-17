@@ -24,9 +24,8 @@ const Space = () => {
           // 로그인 체크
           const isLogin = await UserDataManager.getInstance().checkLogin();
           if (isLogin) {
-            const userId = UserDataManager.getInstance().getUserData().id;
             // 멤버 가입
-            await requestSignupSpace(userId, spaceId);
+            await requestSignupSpace(spaceId);
           }
           initGame();
           await SocketManager.getInstance().connect(spaceId);

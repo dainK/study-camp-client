@@ -59,17 +59,16 @@ const CreateSpaceModal = ({ show, handleClose }) => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              required
             />
-            {image && (
-              <div className="mt-3">
-                <img
-                  src={URL.createObjectURL(image)}
-                  style={{ width: '100%', aspectRatio: '2 / 1' }}
-                  alt="학습공간 썸네일"
-                />
-              </div>
-            )}
+            <img
+              src={
+                image
+                  ? URL.createObjectURL(image)
+                  : 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png'
+              }
+              alt="학습공간 썸네일"
+              style={{ width: '100%', aspectRatio: '2 / 1', marginTop: '10px' }}
+            />
           </Form.Group>
           <Form.Group controlId="formContent" className="mt-3">
             <Form.Label>학습공간 소개</Form.Label>

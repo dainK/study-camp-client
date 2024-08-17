@@ -241,15 +241,15 @@ export const requestEnterCode = async (code) => {
   }
 };
 
-export const requestSignupSpace = async (userId, spaceId) => {
-  const data = { user_id: userId, space_id: spaceId };
+export const requestSignupSpace = async (spaceId) => {
+  const data = { spaceId };
   try {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
       throw new Error('Access token not found');
     }
     const response = await axios.post(
-      `${process.env.VITE_SERVER_URL}/space-member'`,
+      `${process.env.VITE_SERVER_URL}/space-member`,
       data,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -257,8 +257,8 @@ export const requestSignupSpace = async (userId, spaceId) => {
     );
     return response;
   } catch (error) {
-    // return false;
-    // console.error('멤버 가입 실패:', error);
+    console.error('멤버 가입 실패:', error);
+    return false;
   }
 };
 

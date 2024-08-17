@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Modal, Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 스타일을 임포트합니다.
 import './styles/List.css';
@@ -14,14 +14,15 @@ const ListPublic = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedSpace, setSelectedSpace] = useState(null);
-  const [pageRangeDisplayed, setPageRangeDisplayed] = useState(10); // 페이지 버튼 수 초기값
+  const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태 추가
+  const [filteredSpaceList, setFilteredSpaceList] = useState([]); // 필터된 목록 상태
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const spaces = await requestAllSpaceList();
-        // console.log(spaces);
         setSpaceList(spaces);
+        setFilteredSpaceList(spaces); // 초기 목록 설정
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -51,6 +52,15 @@ const ListPublic = () => {
     return () => window.removeEventListener('resize', updatePageRange);
   }, []);
 
+  useEffect(() => {
+    // searchTerm 변경될 때만 필터링 수행
+    const filteredList = spaceList.filter((space) =>
+      space.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredSpaceList(filteredList);
+    setCurrentPage(0); // 검색어 변경 시 페이지 초기화
+  }, [searchTerm, spaceList]);
+
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
   };
@@ -65,16 +75,12 @@ const ListPublic = () => {
     setSelectedSpace(null);
   };
 
-  const handlePasswordSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const password = formData.get('password');
-    console.log('비밀번호:', password);
-  };
-
   const offset = currentPage * itemsPerPage;
-  const pageCount = Math.ceil(spaceList.length / itemsPerPage);
-  const currentSpaceList = spaceList.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredSpaceList.length / itemsPerPage);
+  const currentSpaceList = filteredSpaceList.slice(
+    offset,
+    offset + itemsPerPage,
+  );
 
   if (loading) {
     return <div>Loading...</div>;
@@ -96,58 +102,61 @@ const ListPublic = () => {
           </div>
         </div>
         <div className="uiRight">
-          <input className="searchinput" placeholder="학습 공간 검색" />
+          <input
+            className="searchinput"
+            placeholder="학습 공간 검색"
+            onChange={(e) => setSearchTerm(e.target.value)} // 입력시마다 searchTerm 상태 변경
+          />
         </div>
       </div>
       <div className="listGridContainer">
         <div className="grid-container">
-          {Array.isArray(currentSpaceList) &&
-            currentSpaceList.map((space, index) => (
-              <div key={index} className="grid-item">
-                <Card
+          {currentSpaceList.map((space, index) => (
+            <div key={index} className="grid-item">
+              <Card
+                style={{
+                  margin: '3%',
+                  aspectRatio: '2 / 1',
+                  width: '100%',
+                  overflow: 'hidden', // 이미지가 넘치는 경우를 방지
+                }}
+                onClick={() => handleCardClick(space)}
+                role="button"
+              >
+                <Card.Img
+                  src={
+                    space.image_url ||
+                    'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png'
+                  }
+                  alt="Card image"
                   style={{
-                    margin: '3%',
-                    aspectRatio: '2 / 1',
                     width: '100%',
-                    overflow: 'hidden', // 이미지가 넘치는 경우를 방지
+                    height: '100%',
+                    objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                   }}
-                  onClick={() => handleCardClick(space)}
-                  role="button"
-                >
-                  <Card.Img
-                    src={
-                      space.image_url ||
-                      'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbUljpJ%2FbtsISVoAu1d%2F67ykGPycZ25d0Cx7Oq3Ci1%2Fimg.png'
-                    }
-                    alt="Card image"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
-                    }}
-                  />
-                  <Card.ImgOverlay
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'end',
-                      alignItems: 'end',
-                    }}
-                  >
-                    <span className="count-text">{space.membersCount}명</span>
-                  </Card.ImgOverlay>
-                </Card>
-                <div
+                />
+                <Card.ImgOverlay
                   style={{
                     display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
+                    justifyContent: 'end',
+                    alignItems: 'end',
                   }}
                 >
-                  <h5>{space.name}</h5>
-                </div>
+                  <span className="count-text">{space.membersCount}명</span>
+                </Card.ImgOverlay>
+              </Card>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <h5>{space.name}</h5>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       </div>
       <ReactPaginate
@@ -157,7 +166,7 @@ const ListPublic = () => {
         breakClassName={'break-me'}
         pageCount={pageCount}
         marginPagesDisplayed={2}
-        pageRangeDisplayed={setPageRangeDisplayed} // 동적으로 설정된 페이지 버튼 수
+        pageRangeDisplayed={5} // 정해진 숫자로 설정
         onPageChange={handlePageClick}
         containerClassName={'pagination'}
         activeClassName={'active'}
