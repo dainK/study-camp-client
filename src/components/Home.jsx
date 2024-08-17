@@ -46,13 +46,13 @@ class Home extends React.Component {
               </Link>
               <div
                 className="menuItem"
-                onClick={() => console.log('소개 클릭됨')}
+                // onClick={() => console.log('소개 클릭됨')}
               >
                 소개
               </div>
               <div
                 className="menuItem"
-                onClick={() => console.log('가격 클릭됨')}
+                // onClick={() => console.log('가격 클릭됨')}
               >
                 가격
               </div>

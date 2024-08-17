@@ -46,7 +46,7 @@ const InputCodeModal = ({ show, handleClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inviteCode = code.join('');
-    console.log('Invite Code:', inviteCode);
+    // console.log('Invite Code:', inviteCode);
 
     const data = await requestEnterCode(inviteCode);
     if (data) {

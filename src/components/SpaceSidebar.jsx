@@ -187,7 +187,7 @@ const SpaceSidebar = () => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Enter 키의 기본 동작 방지 (줄바꿈 방지)
-      console.log(inButton);
+      // console.log(inButton);
       if (inButton == 'chat') {
         handleSendSpaceMessage();
       }

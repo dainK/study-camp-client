@@ -27,7 +27,7 @@ const CreateSpaceModal = ({ show, handleClose }) => {
 
     try {
       const response = await requestCreateSpace(spaceData);
-      console.log('스페이스 생성 성공:', response);
+      // console.log('스페이스 생성 성공:', response);
       // 추가 처리 (예: 사용자에게 알림 또는 페이지 이동 등)
       handleClose(); // 모달 닫기
     } catch (error) {

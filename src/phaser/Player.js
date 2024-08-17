@@ -13,7 +13,6 @@ export default class Player {
     //   UserDataManager.getInstance().setUserNickName(data.nickName);
     // }
     this.nickName = data.nickName;
-    console.log(data);
 
     this.m_cursorKeys = this.scene.input.keyboard.createCursorKeys();
     this.wKey = this.scene.input.keyboard.addKey('W');
@@ -51,12 +50,6 @@ export default class Player {
     this.hairSprite = this.scene.physics.add.sprite(0, 0, hair);
     this.hairSprite.setOrigin(0, 0.5);
 
-    // console.log(
-    //   this.skinSprite,
-    //   this.faceSprite,
-    //   this.clothesSprite,
-    //   this.hairSprite,
-    // );
     this.nicknameText = this.scene.add.text(0, 0, this.nickName, {
       fontSize: '16px',
       fill: '#ffffff',

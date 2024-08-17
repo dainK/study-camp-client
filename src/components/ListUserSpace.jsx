@@ -117,7 +117,7 @@ const ListUserSpace = () => {
         <div className="uiLeft">
           <div
             className="textItem"
-            onClick={() => console.log('참여한 학습 공간 클릭됨')}
+            // onClick={() => console.log('참여한 학습 공간 클릭됨')}
           >
             참여한 학습 공간
           </div>

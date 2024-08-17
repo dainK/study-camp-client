@@ -6,9 +6,6 @@ export default class OtherPlayer {
     this.scene = scene;
     this.data = data;
     this.nickName = data.nickName;
-    // this.x = data.x;
-    // this.y = data.y;
-    console.log(data);
 
     this.tilePos = { x: data.x, y: data.y };
     this.isMove = false;

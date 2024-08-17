@@ -96,7 +96,7 @@ const ListPublic = () => {
         <div className="uiLeft">
           <div
             className="textItem"
-            onClick={() => console.log('전체 학습 공간 클릭됨')}
+            // onClick={() => console.log('전체 학습 공간 클릭됨')}
           >
             전체 학습 공간
           </div>

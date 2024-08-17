@@ -6,12 +6,11 @@ import { requestEnterSpace } from '../../util/request';
 
 const EnterSpaceModal = ({ show, handleClose, space, isUserSpace }) => {
   const [password, setPassword] = useState('');
-  console.log(space);
   const [isPublic, setIsPublic] = useState(space.isPublic);
   const [isUser, setIsUser] = useState(isUserSpace);
 
   const handleSubmit = async (e) => {
-    console.log(isPublic);
+    // console.log(isPublic);
     e.preventDefault();
     // 비밀번호를 검증하고 공간에 입장하는 로직을 추가합니다.
     if (isPublic) {
@@ -19,7 +18,6 @@ const EnterSpaceModal = ({ show, handleClose, space, isUserSpace }) => {
         spaceId: space.id,
         password: '',
       });
-      console.log(res);
       if (!!res && !!res.url) {
         window.location.href = `${process.env.VITE_GITHUB_PAGE}/space/${res.url}`;
       } else {

@@ -125,7 +125,7 @@ export const requestUserSpaceList = async () => {
 
 export const requestEnterSpace = async (data) => {
   try {
-    console.log(data);
+    // console.log(data);
     //{spaceId,password}
     const accessToken = localStorage.getItem('access_token') || null;
     const response = await axios.post(
@@ -144,7 +144,7 @@ export const requestEnterSpace = async (data) => {
 
 export const requestCheckSpace = async (url) => {
   try {
-    console.log(url);
+    // console.log(url);
     const accessToken = localStorage.getItem('access_token');
     const response = await axios.get(
       `${process.env.VITE_SERVER_URL}/space/url/${url}`,
