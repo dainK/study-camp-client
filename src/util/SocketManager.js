@@ -30,15 +30,44 @@ export default class SocketManager {
     this.servers = {
       iceServers: [
         {
-          urls: [
-            'stun:stun.l.google.com:19302',
-            'stun:stun1.l.google.com:19302',
-            'stun:stun2.l.google.com:19302',
-            'stun:stun3.l.google.com:19302',
-            'stun:stun4.l.google.com:19302',
-          ],
+          urls: 'stun:stun.relay.metered.ca:80',
+        },
+        {
+          urls: 'turn:seoul.relay.metered.ca:80',
+          username: process.env.VITE_TURN_SERVER_ID,
+          credential: process.env.VITE_TURN_SERVER_PW,
+        },
+        {
+          urls: 'turn:seoul.relay.metered.ca:80?transport=tcp',
+          username: process.env.VITE_TURN_SERVER_ID,
+          credential: process.env.VITE_TURN_SERVER_PW,
+        },
+        {
+          urls: 'turn:seoul.relay.metered.ca:443',
+          username: process.env.VITE_TURN_SERVER_ID,
+          credential: process.env.VITE_TURN_SERVER_PW,
+        },
+        {
+          urls: 'turns:seoul.relay.metered.ca:443?transport=tcp',
+          username: process.env.VITE_TURN_SERVER_ID,
+          credential: process.env.VITE_TURN_SERVER_PW,
         },
       ],
+    };
+
+    this.createTurnServeer();
+  }
+
+  async createTurnServeer() {
+    // Calling the REST API TO fetch the TURN Server Credentials
+    const response = await fetch(
+      `https://${process.env.VITE_TURN_SERVER_NAME}.metered.live/api/v1/turn/credentials?apiKey=${process.env.VITE_TURN_SERVER_API}`,
+    );
+
+    // Saving the response in the iceServers array
+    const iceServers = await response.json();
+    this.servers = {
+      iceServers: iceServers,
     };
   }
 
