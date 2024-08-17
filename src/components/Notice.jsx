@@ -75,10 +75,19 @@ const Notice = () => {
                       objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                     }}
                   />
-                  {/* <Card.ImgOverlay>
-                      <Card.Title>공지 2</Card.Title>
-                      <Card.Text>공지 내용 2</Card.Text>
-                    </Card.ImgOverlay> */}
+
+                  <Card.ImgOverlay>
+                    <Card.Title
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '20px',
+                      }}
+                    >
+                      캐릭터
+                    </Card.Title>
+                    {/* <Card.Text>공지 내용 2</Card.Text> */}
+                  </Card.ImgOverlay>
                 </Card>
               </div>
               <div>
@@ -86,7 +95,7 @@ const Notice = () => {
                   style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
                 >
                   <Card.Img
-                    src="https://via.placeholder.com/800x400"
+                    src="https://blog.kakaocdn.net/dn/bIpVwZ/btsI6yfwdLl/uYRQLltAfejosIkkTcO9Vk/img.gif"
                     alt="Card image"
                     style={{
                       width: '100%',
@@ -94,10 +103,25 @@ const Notice = () => {
                       objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                     }}
                   />
-                  {/* <Card.ImgOverlay>
-                      <Card.Title>공지 2</Card.Title>
-                      <Card.Text>공지 내용 2</Card.Text>
-                    </Card.ImgOverlay> */}
+                  <Card.ImgOverlay>
+                    <Card.Title
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '20px',
+                      }}
+                    >
+                      WebRTC
+                    </Card.Title>
+                    <Card.Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      화상통화, 화면공유
+                    </Card.Text>
+                  </Card.ImgOverlay>
                 </Card>
               </div>
             </Slider>
