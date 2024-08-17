@@ -78,7 +78,6 @@ const CreateSpaceModal = ({ show, handleClose }) => {
               placeholder="내용을 입력하세요"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              required
             />
           </Form.Group>
           <Form.Group className="mt-3">

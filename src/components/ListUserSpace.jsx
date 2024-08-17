@@ -43,7 +43,7 @@ const ListUserSpace = () => {
     };
 
     fetchData();
-  }, []);
+  }, [showCreateModal]);
 
   useEffect(() => {
     const updatePageRange = () => {
