@@ -30,6 +30,15 @@ export default class SocketManager {
     this.servers = {
       iceServers: [
         {
+          urls: [
+            'stun:stun.l.google.com:19302',
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
+            'stun:stun3.l.google.com:19302',
+            'stun:stun4.l.google.com:19302',
+          ],
+        },
+        {
           urls: 'stun:stun.relay.metered.ca:80',
         },
         {
@@ -55,7 +64,7 @@ export default class SocketManager {
       ],
     };
 
-    this.createTurnServeer();
+    // this.createTurnServeer();
   }
 
   async createTurnServeer() {
