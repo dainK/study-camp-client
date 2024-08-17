@@ -2,7 +2,11 @@ import React from 'react';
 import './styles/Signup.css';
 import Title from './Title';
 import { Card, Modal, Button, Form } from 'react-bootstrap';
-import { requestSignup } from '../util/request';
+import {
+  requestSignup,
+  handleKakaoLogin,
+  handleGoogleLogin,
+} from '../util/request';
 
 class Signup extends React.Component {
   handleSubmit = async (event) => {
@@ -78,10 +82,18 @@ class Signup extends React.Component {
                   Sign up
                 </Button>
                 <div className="button-box">
-                  <button type="button" className="google-signup-button">
+                  <button
+                    type="button"
+                    className="google-signup-button "
+                    onClick={handleGoogleLogin}
+                  >
                     Sign up with Google
                   </button>
-                  <button type="button" className="kakao-signup-button">
+                  <button
+                    type="button"
+                    className="kakao-signup-button"
+                    onClick={handleKakaoLogin}
+                  >
                     Sign up with Kakao
                   </button>
                 </div>

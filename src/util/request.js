@@ -293,3 +293,12 @@ export const requestCreateSpace = async (spaceData) => {
     throw error; // 오류를 다시 throw하여 호출 측에서 처리할 수 있도록 함
   }
 };
+
+// 소셜로그인
+export const handleKakaoLogin = () => {
+  window.location.href = `${process.env.VITE_SERVER_URL}/auth/kakao`;
+};
+
+export const handleGoogleLogin = () => {
+  window.location.href = `${process.env.VITE_SERVER_URL}/auth/google`;
+};
