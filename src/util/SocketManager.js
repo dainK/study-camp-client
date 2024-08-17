@@ -27,56 +27,67 @@ export default class SocketManager {
     this.audioStream = null;
 
     this.peerConnections = {};
+    // this.servers = {
+    //   iceServers: [
+    //     // {
+    //     //   urls: [
+    //     //     'stun:stun.l.google.com:19302',
+    //     //     'stun:stun1.l.google.com:19302',
+    //     //     'stun:stun2.l.google.com:19302',
+    //     //     'stun:stun3.l.google.com:19302',
+    //     //     'stun:stun4.l.google.com:19302',
+    //     //   ],
+    //     // },
+    //     // {
+    //     //   urls: 'turn:turn.anyfirewall.com:443',
+    //     // },
+    //     // {
+    //     //   urls: 'stun:stun.relay.metered.ca:80',
+    //     // },
+    //     // {
+    //     //   urls: 'turn:seoul.relay.metered.ca:80',
+    //     //   username: process.env.VITE_TURN_SERVER_ID,
+    //     //   credential: process.env.VITE_TURN_SERVER_PW,
+    //     // },
+    //     // {
+    //     //   urls: 'turn:seoul.relay.metered.ca:80?transport=tcp',
+    //     //   username: process.env.VITE_TURN_SERVER_ID,
+    //     //   credential: process.env.VITE_TURN_SERVER_PW,
+    //     // },
+    //     // {
+    //     //   urls: 'turn:seoul.relay.metered.ca:443',
+    //     //   username: process.env.VITE_TURN_SERVER_ID,
+    //     //   credential: process.env.VITE_TURN_SERVER_PW,
+    //     // },
+    //     // {
+    //     //   urls: 'turns:seoul.relay.metered.ca:443?transport=tcp',
+    //     //   username: process.env.VITE_TURN_SERVER_ID,
+    //     //   credential: process.env.VITE_TURN_SERVER_PW,
+    //     // },
+    //   ],
+    // };
+
     this.servers = {
       iceServers: [
         {
-          urls: [
-            'stun:stun.l.google.com:19302',
-            'stun:stun1.l.google.com:19302',
-            'stun:stun2.l.google.com:19302',
-            'stun:stun3.l.google.com:19302',
-            'stun:stun4.l.google.com:19302',
-          ],
+          urls: 'stun:stun.cloudflare.com:3478',
         },
         {
-          urls: 'stun:stun.relay.metered.ca:80',
+          urls: 'turn:turn.cloudflare.com:3478?transport=udp',
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
         },
         {
-          urls: 'turn:seoul.relay.metered.ca:80',
-          username: process.env.VITE_TURN_SERVER_ID,
-          credential: process.env.VITE_TURN_SERVER_PW,
+          urls: 'turn:turn.cloudflare.com:3478?transport=tcp',
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
         },
         {
-          urls: 'turn:seoul.relay.metered.ca:80?transport=tcp',
-          username: process.env.VITE_TURN_SERVER_ID,
-          credential: process.env.VITE_TURN_SERVER_PW,
-        },
-        {
-          urls: 'turn:seoul.relay.metered.ca:443',
-          username: process.env.VITE_TURN_SERVER_ID,
-          credential: process.env.VITE_TURN_SERVER_PW,
-        },
-        {
-          urls: 'turns:seoul.relay.metered.ca:443?transport=tcp',
-          username: process.env.VITE_TURN_SERVER_ID,
-          credential: process.env.VITE_TURN_SERVER_PW,
+          urls: 'turns:turn.cloudflare.com:5349?transport=tcp',
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
         },
       ],
-    };
-
-    // this.createTurnServeer();
-  }
-
-  async createTurnServeer() {
-    // Calling the REST API TO fetch the TURN Server Credentials
-    const response = await fetch(
-      `https://${process.env.VITE_TURN_SERVER_NAME}.metered.live/api/v1/turn/credentials?apiKey=${process.env.VITE_TURN_SERVER_API}`,
-    );
-
-    // Saving the response in the iceServers array
-    const iceServers = await response.json();
-    this.servers = {
-      iceServers: iceServers,
     };
   }
 
@@ -424,7 +435,10 @@ export default class SocketManager {
 
   async createOffer(targetUserId, status) {
     console.log(`createOffer: ${targetUserId}`);
-    const peerConnection = this.createOfferPeerConnection(targetUserId, status);
+    const peerConnection = await this.createOfferPeerConnection(
+      targetUserId,
+      status,
+    );
     try {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
@@ -438,7 +452,7 @@ export default class SocketManager {
     }
   }
 
-  createOfferPeerConnection(userId, status) {
+  async createOfferPeerConnection(userId, status) {
     console.log(`Creating peer connection for user: ${userId}`);
     const peerConnection = new RTCPeerConnection(this.servers);
     this.peerConnections[`${userId}_${status}_res`] = peerConnection;
@@ -477,6 +491,7 @@ export default class SocketManager {
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log('요청 candidate', userId);
         this.socket.emit('candidate', {
           candidate: event.candidate,
           target: userId,
@@ -488,7 +503,7 @@ export default class SocketManager {
     peerConnection.ontrack = (event) => {
       const [stream] = event.streams;
       const streamId = stream.id;
-      // console.log('요청 피어', status, userId);
+      console.log('요청 피어', status, userId);
     };
 
     return peerConnection;
@@ -499,13 +514,11 @@ export default class SocketManager {
     this.peerConnections[`${userId}_${status}`] = peerConnection;
 
     this.myStream = new MediaStream();
-
     const oscillator = this.audioContext.createOscillator();
     const dummyTrack = oscillator
       .connect(this.audioContext.createMediaStreamDestination())
       .stream.getAudioTracks()[0];
     this.myStream.addTrack(dummyTrack);
-
     if (this.myStream) {
       this.myStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, this.myStream);
@@ -514,6 +527,7 @@ export default class SocketManager {
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log('응답 candidate', userId);
         this.socket.emit('candidate', {
           candidate: event.candidate,
           target: userId,
@@ -525,7 +539,7 @@ export default class SocketManager {
     peerConnection.ontrack = (event) => {
       const [stream] = event.streams;
       const streamId = stream.id;
-      // console.log('응답 피어', userId);
+      console.log('응답 피어', userId);
 
       if (status == 'camera') {
         let video = document.getElementById(`card_${userId}_camera`);

@@ -19,17 +19,10 @@ export default ({ mode }) => {
       'process.env.VITE_CLIENT_URL': JSON.stringify(env.VITE_CLIENT_URL),
       'process.env.VITE_SERVER_URL': JSON.stringify(env.VITE_SERVER_URL),
       'process.env.VITE_GITHUB_PAGE': JSON.stringify(env.VITE_GITHUB_PAGE),
-      'process.env.VITE_TURN_SERVER_API': JSON.stringify(
-        env.VITE_TURN_SERVER_API,
-      ),
-      'process.env.VITE_TURN_SERVER_NAME': JSON.stringify(
-        env.VITE_TURN_SERVER_NAME,
-      ),
-      'process.env.VITE_TURN_SERVER_ID': JSON.stringify(
-        env.VITE_TURN_SERVER_ID,
-      ),
-      'process.env.VITE_TURN_SERVER_PW': JSON.stringify(
-        env.VITE_TURN_SERVER_PW,
+
+      'process.env.VITE_TURN_USERNAME': JSON.stringify(env.VITE_TURN_USERNAME),
+      'process.env.VITE_TURN_CREDENTIAL': JSON.stringify(
+        env.VITE_TURN_CREDENTIAL,
       ),
     },
     server: {
