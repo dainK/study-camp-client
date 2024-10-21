@@ -102,17 +102,32 @@ export default class SocketManager {
           ],
         },
         {
+          urls: `turn:${process.env.VITE_TURN_IP}:80`,
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turn:${process.env.VITE_TURN_IP}:80?transport=tcp`,
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turn:${process.env.VITE_TURN_IP}:433`,
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turn:${process.env.VITE_TURN_IP}:443?transport=tcp`,
+          username: process.env.VITE_TURN_USERNAME,
+          credential: process.env.VITE_TURN_CREDENTIAL,
+        },
+        {
           urls: `turn:${process.env.VITE_TURN_IP}:3478`,
           username: process.env.VITE_TURN_USERNAME,
           credential: process.env.VITE_TURN_CREDENTIAL,
         },
         {
           urls: `turn:${process.env.VITE_TURN_IP}:3478?transport=tcp`,
-          username: process.env.VITE_TURN_USERNAME,
-          credential: process.env.VITE_TURN_CREDENTIAL,
-        },
-        {
-          urls: `turn:${process.env.VITE_TURN_IP}:443?transport=tcp`,
           username: process.env.VITE_TURN_USERNAME,
           credential: process.env.VITE_TURN_CREDENTIAL,
         },
