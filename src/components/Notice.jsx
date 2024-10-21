@@ -75,7 +75,7 @@ const Notice = () => {
                   }}
                 >
                   <Card.Img
-                    src="https://blog.kakaocdn.net/dn/bvmv2T/btsI7VmMByF/RYzOXqhNqaqOw7WFtZat4K/img.gif"
+                    src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb5NfO7%2FbtsI7oXsAMV%2Fvht9yOf6zWMFoFfIdg7u30%2Fimg.png"
                     alt="Card image"
                     style={{
                       // width: '100%',
@@ -84,7 +84,7 @@ const Notice = () => {
                     }}
                   />
 
-                  <Card.ImgOverlay>
+                  {/* <Card.ImgOverlay>
                     <Card.Title
                       style={{
                         // color: 'white',
@@ -94,8 +94,7 @@ const Notice = () => {
                     >
                       캐릭터 꾸미기
                     </Card.Title>
-                    {/* <Card.Text>공지 내용 2</Card.Text> */}
-                  </Card.ImgOverlay>
+                  </Card.ImgOverlay> */}
                 </Card>
               </div>
               <div>
@@ -103,7 +102,7 @@ const Notice = () => {
                   style={{ margin: '3%', width: '94%', aspectRatio: '2/1' }}
                 >
                   <Card.Img
-                    src="https://blog.kakaocdn.net/dn/bIpVwZ/btsI6yfwdLl/uYRQLltAfejosIkkTcO9Vk/img.gif"
+                    src="https://blog.kakaocdn.net/dn/3P9pm/btsI6CB2WWI/lcRvmFbBwLOQKv9uF0YKd1/img.gif"
                     alt="Card image"
                     style={{
                       width: '100%',
@@ -111,7 +110,7 @@ const Notice = () => {
                       objectFit: 'cover', // 이미지를 비율에 맞게 잘라서 보여줌
                     }}
                   />
-                  <Card.ImgOverlay>
+                  {/* <Card.ImgOverlay>
                     <Card.Title
                       style={{
                         // color: 'white',
@@ -129,7 +128,7 @@ const Notice = () => {
                     >
                       화상통화, 화면공유
                     </Card.Text>
-                  </Card.ImgOverlay>
+                  </Card.ImgOverlay> */}
                 </Card>
               </div>
             </Slider>

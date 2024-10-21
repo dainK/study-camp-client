@@ -20,6 +20,7 @@ export default ({ mode }) => {
       'process.env.VITE_SERVER_URL': JSON.stringify(env.VITE_SERVER_URL),
       'process.env.VITE_GITHUB_PAGE': JSON.stringify(env.VITE_GITHUB_PAGE),
 
+      'process.env.VITE_TURN_IP': JSON.stringify(env.VITE_TURN_IP),
       'process.env.VITE_TURN_USERNAME': JSON.stringify(env.VITE_TURN_USERNAME),
       'process.env.VITE_TURN_CREDENTIAL': JSON.stringify(
         env.VITE_TURN_CREDENTIAL,
