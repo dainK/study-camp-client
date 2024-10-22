@@ -67,77 +67,77 @@ export default class SocketManager {
     //   ],
     // };
 
+    // this.servers = {
+    //   iceServers: [
+    //     // {
+    //     //   urls: 'stun:stun.cloudflare.com:3478',
+    //     // },
+    //     {
+    //       urls: 'turn:turn.cloudflare.com:3478?transport=udp',
+    //       username: process.env.VITE_TURN_USERNAME,
+    //       credential: process.env.VITE_TURN_CREDENTIAL,
+    //     },
+    //     {
+    //       urls: 'turn:turn.cloudflare.com:3478?transport=tcp',
+    //       username: process.env.VITE_TURN_USERNAME,
+    //       credential: process.env.VITE_TURN_CREDENTIAL,
+    //     },
+    //     {
+    //       urls: 'turns:turn.cloudflare.com:5349?transport=tcp',
+    //       username: process.env.VITE_TURN_USERNAME,
+    //       credential: process.env.VITE_TURN_CREDENTIAL,
+    //     },
+    //   ],
+    // };
+
     this.servers = {
       iceServers: [
         // {
-        //   urls: 'stun:stun.cloudflare.com:3478',
+        //   urls: [
+        //     'stun:stun.l.google.com:19302',
+        //     'stun:stun1.l.google.com:19302',
+        //     'stun:stun2.l.google.com:19302',
+        //     'stun:stun3.l.google.com:19302',
+        //     'stun:stun4.l.google.com:19302',
+        //   ],
+        // },
+        // {
+        //   urls: `turn:${process.env.VITE_TURN_IP}:80`,
+        //   username: process.env.VITE_TURN_USERNAME,
+        //   credential: process.env.VITE_TURN_CREDENTIAL,
+        // },
+        // {
+        //   urls: `turn:${process.env.VITE_TURN_IP}:80?transport=tcp`,
+        //   username: process.env.VITE_TURN_USERNAME,
+        //   credential: process.env.VITE_TURN_CREDENTIAL,
+        // },
+        // {
+        //   urls: `turn:${process.env.VITE_TURN_IP}:433`,
+        //   username: process.env.VITE_TURN_USERNAME,
+        //   credential: process.env.VITE_TURN_CREDENTIAL,
+        // },
+        // {
+        //   urls: `turn:${process.env.VITE_TURN_IP}:443?transport=tcp`,
+        //   username: process.env.VITE_TURN_USERNAME,
+        //   credential: process.env.VITE_TURN_CREDENTIAL,
         // },
         {
-          urls: 'turn:turn.cloudflare.com:3478?transport=udp',
+          urls: `turn:${process.env.VITE_TURN_IP}:3478`,
           username: process.env.VITE_TURN_USERNAME,
           credential: process.env.VITE_TURN_CREDENTIAL,
         },
         {
-          urls: 'turn:turn.cloudflare.com:3478?transport=tcp',
+          urls: `turn:${process.env.VITE_TURN_IP}:3478?transport=tcp`,
           username: process.env.VITE_TURN_USERNAME,
           credential: process.env.VITE_TURN_CREDENTIAL,
         },
-        {
-          urls: 'turns:turn.cloudflare.com:5349?transport=tcp',
-          username: process.env.VITE_TURN_USERNAME,
-          credential: process.env.VITE_TURN_CREDENTIAL,
-        },
+        // {
+        //   urls: 'turn:152.67.196.199:3478',
+        //   username: 'pachyuchepe',
+        //   credential: '123100',
+        // },
       ],
     };
-
-    // this.servers = {
-    //   iceServers: [
-    //     {
-    //       urls: [
-    //         'stun:stun.l.google.com:19302',
-    //         'stun:stun1.l.google.com:19302',
-    //         'stun:stun2.l.google.com:19302',
-    //         'stun:stun3.l.google.com:19302',
-    //         'stun:stun4.l.google.com:19302',
-    //       ],
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:80`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:80?transport=tcp`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:433`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:443?transport=tcp`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:3478`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     {
-    //       urls: `turn:${process.env.VITE_TURN_IP}:3478?transport=tcp`,
-    //       username: process.env.VITE_TURN_USERNAME,
-    //       credential: process.env.VITE_TURN_CREDENTIAL,
-    //     },
-    //     // {
-    //     //   urls: 'turn:152.67.196.199:3478',
-    //     //   username: 'pachyuchepe',
-    //     //   credential: '123100',
-    //     // },
-    //   ],
-    // };
   }
 
   static getInstance() {
