@@ -48,7 +48,9 @@
 ### Space page
 
 - [x] 페이저 게임 씬 구현<br>
-- [x] 현재 자신의 구역에 참여중인 유저들 카드 생성<br>
+- [x] 스페이스 생성<br>
+      <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbdP7Sx%2FbtsI7ffcyp3%2FeZsLlRcE72WCUlQW0pbpU0%2Fimg.png"><br>
+- [x] 현재 자신의 구역에 참여중인 유저들 참여목록 갱신<br>
 - [x] 구역 유저들과의 화상통화, 화면공유, 음성통과 기능 (WebRTC)
       <img src="https://blog.kakaocdn.net/dn/bEp4lo/btsLJ58crB2/cnbJixqOKi4QKvNoKfnt10/img.gif"><br>
 - [x] 현재 학습공간에서의 전채 채팅과 구역 채팅 기능 (socket.io)<br>
