@@ -49,7 +49,8 @@
 
 - [x] 페이저 게임 씬 구현<br>
 - [x] 현재 자신의 구역에 참여중인 유저들 카드 생성<br>
-- [x] 구역 유저들과의 화상통화, 화면공유, 음성통과 기능 (WebRTC)<br>
+- [x] 구역 유저들과의 화상통화, 화면공유, 음성통과 기능 (WebRTC)
+      <img src="https://blog.kakaocdn.net/dn/bEp4lo/btsLJ58crB2/cnbJixqOKi4QKvNoKfnt10/img.gif"><br>
 - [x] 현재 학습공간에서의 전채 채팅과 구역 채팅 기능 (socket.io)<br>
       <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FC4wcR%2FbtsI7NbjZMa%2FYc50t4bCKMo5GV5gAqoJk1%2Fimg.png"><br>
 - [x] 닉네임 변경 (실시간 변경 및 리소스 동적 로드)<br>
